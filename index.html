@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Calculator | Blue Ray Energy</title>
+<style>
+  :root {
+    --primary: #0a4f8c;
+    --primary-dark: #073968;
+    --primary-light: #2e7cc4;
+    --accent: #f5b800;
+    --accent-dark: #d99e00;
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a2533;
+    --muted: #64748b;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --shadow: 0 4px 14px rgba(10, 79, 140, 0.08);
+    --shadow-lg: 0 10px 30px rgba(10, 79, 140, 0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .widget {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 20px 120px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-logo {
+    height: 48px;
+    width: auto;
+    display: block;
+  }
+  .brand-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 720px) {
+    .brand-logo { height: 38px; }
+  }
+
+  .progress {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .progress-dot {
+    width: 28px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .progress-dot.active { background: var(--primary); }
+  .progress-dot.done { background: var(--accent); }
+
+  /* Step containers */
+  [data-show-step] { display: none; }
+  body[data-step="1"] [data-show-step="1"],
+  body[data-step="2"] [data-show-step="2"],
+  body[data-step="3"] [data-show-step="3"],
+  body[data-step="4"] [data-show-step="4"],
+  body[data-step="5"] [data-show-step="5"] { display: block; }
+
+  /* Welcome (step 1) */
+  .welcome-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 40px 32px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+  .welcome-card h1 {
+    margin: 0 0 12px;
+    font-size: 28px;
+    line-height: 1.2;
+  }
+  .welcome-card p {
+    margin: 0 0 24px;
+    color: rgba(255,255,255,0.85);
+    max-width: 560px;
+    margin-left: auto; margin-right: auto;
+  }
+  .welcome-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 32px 0;
+    text-align: left;
+  }
+  .welcome-feature {
+    background: rgba(255,255,255,0.08);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .welcome-feature-num {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .welcome-feature-text { font-size: 14px; color: rgba(255,255,255,0.9); }
+
+  /* Step 2 - appliances */
+  .step-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--primary-dark);
+  }
+  .step-subtitle {
+    color: var(--muted);
+    margin: 0 0 20px;
+  }
+  .layout-2col {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+  }
+  .panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .category-tab {
+    padding: 8px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .category-tab:hover { border-color: var(--primary-light); color: var(--primary); }
+  .category-tab.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+
+  .appliance-grid { display: flex; flex-direction: column; gap: 20px; }
+  .category-section { scroll-margin-top: 16px; }
+  .category-heading {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--primary);
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--bg);
+  }
+  .appliance-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .appliance-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .appliance-card:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+  }
+  .appliance-card.selected {
+    border-color: var(--primary);
+    background: #eaf3fb;
+  }
+  .appliance-card-name { font-weight: 600; font-size: 14px; }
+  .appliance-card-cat { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Selected list (sidebar) */
+  .selected-panel {
+    position: sticky;
+    top: 20px;
+  }
+  .selected-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .selected-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--primary-dark);
+  }
+  .selected-total {
+    background: var(--accent);
+    color: var(--primary-dark);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .selected-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 14px;
+  }
+  .selected-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fafbfd;
+  }
+  .selected-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .selected-item-name { font-weight: 600; font-size: 14px; }
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 4px;
+  }
+  .remove-btn:hover { color: var(--danger); }
+
+  .control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 13px;
+  }
+  .control-row label { color: var(--muted); }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qty-btn {
+    width: 24px; height: 24px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .qty-btn:hover { border-color: var(--primary); }
+  .qty-val { font-weight: 600; min-width: 20px; text-align: center; }
+
+  select, input[type="number"], input[type="text"], input[type="email"], input[type="tel"] {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+    font-family: inherit;
+  }
+  input[type="number"] { width: 80px; }
+
+  .advanced-toggle {
+    font-size: 12px;
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .selected-item-kwh {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+  .selected-item-kwh b { color: var(--primary-dark); }
+
+  /* Review (step 3) */
+  .review-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .review-table th, .review-table td {
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-table th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .review-table tfoot td {
+    font-weight: 700;
+    border-bottom: none;
+    border-top: 2px solid var(--primary);
+  }
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .summary-stat {
+    background: var(--bg);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+  .summary-stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .summary-stat-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Results (step 4) */
+  .quote-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 32px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .quote-label {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+  }
+  .quote-price-iqd {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .quote-price-usd {
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .quote-sys {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .quote-sys-item {
+    background: rgba(255,255,255,0.1);
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .quote-sys-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .quote-sys-lbl {
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 2px;
+  }
+
+  .energy-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .energy-card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--accent);
+  }
+  .energy-card.night { border-left-color: var(--primary); }
+  .energy-card-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .energy-card-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin: 4px 0;
+  }
+  .energy-card-note { font-size: 12px; color: var(--muted); }
+
+  .savings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .savings-card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .savings-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--success);
+    margin: 4px 0;
+  }
+  .savings-card.payback .savings-val { color: var(--primary); }
+  .savings-lbl {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+  .savings-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .disclaimer {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: #fffbeb;
+    border-left: 3px solid var(--accent);
+    font-size: 12px;
+    color: #78350f;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Contact (step 5) */
+  .contact-hero {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: var(--primary-dark);
+    padding: 32px 24px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 20px;
+  }
+  .contact-hero h2 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+  .contact-hero p {
+    margin: 0 0 20px;
+    color: var(--primary-dark);
+    opacity: 0.9;
+  }
+  .phone-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--primary-dark);
+    color: white;
+    text-decoration: none;
+    padding: 16px 28px;
+    border-radius: var(--radius);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .phone-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+  }
+  .phone-icon {
+    width: 22px; height: 22px;
+    fill: var(--accent);
+  }
+  .phone-cta-inline {
+    display: inline-flex;
+    margin-top: 24px;
+    background: var(--accent);
+    color: var(--primary-dark);
+    font-size: 18px;
+    padding: 14px 24px;
+  }
+  .phone-cta-inline .phone-icon { fill: var(--primary-dark); }
+  .phone-cta-inline:hover { background: var(--accent-dark); }
+  .or-divider {
+    text-align: center;
+    color: var(--muted);
+    margin: 20px 0;
+    font-size: 13px;
+    position: relative;
+  }
+  .or-divider::before, .or-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--border);
+  }
+  .or-divider::before { left: 0; }
+  .or-divider::after { right: 0; }
+
+  .contact-form {
+    background: var(--card);
+    padding: 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-field { display: flex; flex-direction: column; }
+  .form-field label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--primary-dark);
+  }
+  .form-field input {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    width: 100%;
+  }
+  .form-field input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(10,79,140,0.12);
+  }
+
+  /* Buttons */
+  .btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn:hover { background: var(--primary-dark); }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+  .btn-accent { background: var(--accent); color: var(--primary-dark); }
+  .btn-accent:hover { background: var(--accent-dark); }
+  .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-block { width: 100%; }
+
+  /* Footer nav */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.04);
+    z-index: 10;
+  }
+  .nav-bar-inner {
+    max-width: 980px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .running-total {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .running-total b {
+    color: var(--primary-dark);
+    font-size: 15px;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .layout-2col { grid-template-columns: 1fr; }
+    .welcome-features { grid-template-columns: 1fr; }
+    .welcome-card { padding: 28px 20px; }
+    .welcome-card h1 { font-size: 22px; }
+    .energy-split { grid-template-columns: 1fr; }
+    .savings-grid { grid-template-columns: 1fr; }
+    .summary-row { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .quote-price-iqd { font-size: 30px; }
+    .phone-cta { font-size: 20px; padding: 14px 22px; }
+    .selected-panel { position: static; }
+    .review-table { font-size: 12px; }
+    .review-table th, .review-table td { padding: 8px 4px; }
+  }
+</style>
+</head>
+<body data-step="1">
+<div class="widget">
+
+  <header class="header">
+    <div class="brand">
+      <img class="brand-logo" id="brandLogo" alt="Blue Ray Energy">
+      <div>
+        <div class="brand-sub">Solar System Calculator</div>
+      </div>
+    </div>
+    <div class="progress" id="progress">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+  </header>
+
+  <!-- STEP 1: WELCOME -->
+  <section data-show-step="1">
+    <div class="welcome-card">
+      <h1>Find the right solar system for your home</h1>
+      <p>Tell us what's in your home. We'll estimate your daily energy needs, recommend a system size, and show you the cost — in just a few minutes.</p>
+      <div class="welcome-features">
+        <div class="welcome-feature">
+          <div class="welcome-feature-num">1</div>
+          <div class="welcome-feature-text">Add your home's appliances. Easy presets or exact wattage — your choice.</div>
+        </div>
+        <div class="welcome-feature">
+          <div class="welcome-feature-num">2</div>
+          <div class="welcome-feature-text">See your daily energy use, split into daytime and nighttime needs.</div>
+        </div>
+        <div class="welcome-feature">
+          <div class="welcome-feature-num">3</div>
+          <div class="welcome-feature-text">Get a sized system with a transparent price and yearly savings estimate.</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="goToStep(2)">Start the calculator</button>
+    </div>
+  </section>
+
+  <!-- STEP 2: APPLIANCES -->
+  <section data-show-step="2">
+    <h2 class="step-title">What's in your home?</h2>
+    <p class="step-subtitle">Scroll through every category below and tap each appliance you have. Adjust quantity, size, and hours on the right.</p>
+    <div class="layout-2col">
+      <div class="panel">
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="appliance-grid" id="applianceGrid"></div>
+      </div>
+      <div class="selected-panel panel">
+        <div class="selected-header">
+          <h3>Your home</h3>
+          <span class="selected-total" id="selectedTotal">0 kWh/day</span>
+        </div>
+        <div id="selectedList">
+          <div class="selected-empty">No appliances added yet. Tap an appliance on the left to begin.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3: REVIEW -->
+  <section data-show-step="3">
+    <h2 class="step-title">Review your usage</h2>
+    <p class="step-subtitle">Here's what we'll use to size your system. Go back to step 2 if you'd like to adjust.</p>
+    <div class="panel">
+      <table class="review-table" id="reviewTable"></table>
+      <div class="summary-row">
+        <div class="summary-stat">
+          <div class="summary-stat-val" id="summaryDaily">—</div>
+          <div class="summary-stat-lbl">Total kWh per day</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-val" id="summaryDay">—</div>
+          <div class="summary-stat-lbl">Daytime use (kWh)</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-stat-val" id="summaryNight">—</div>
+          <div class="summary-stat-lbl">Nighttime use (kWh)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: RESULTS -->
+  <section data-show-step="4">
+    <h2 class="step-title">Your recommended system</h2>
+    <p class="step-subtitle">Built around your usage profile. Solar panels cover daytime energy; the battery covers your night usage and outages.</p>
+
+    <div class="quote-card">
+      <div class="quote-label">Estimated installed price</div>
+      <div class="quote-price-iqd" id="priceIQD">—</div>
+      <div class="quote-price-usd" id="priceUSD">—</div>
+      <div class="quote-sys">
+        <div class="quote-sys-item">
+          <div class="quote-sys-val" id="sysPanel">—</div>
+          <div class="quote-sys-lbl">Solar panels</div>
+        </div>
+        <div class="quote-sys-item">
+          <div class="quote-sys-val" id="sysBattery">—</div>
+          <div class="quote-sys-lbl">Battery storage</div>
+        </div>
+        <div class="quote-sys-item">
+          <div class="quote-sys-val" id="sysInverter">—</div>
+          <div class="quote-sys-lbl">Inverter</div>
+        </div>
+      </div>
+      <a class="phone-cta phone-cta-inline" id="phoneCTAResults" href="tel:">
+        <svg class="phone-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.9.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.9.1.4 0 .8-.3 1.1l-2.2 2.2z"/></svg>
+        <span id="phoneCTAResultsText">Call us for an exact quote</span>
+      </a>
+    </div>
+
+    <div class="energy-split">
+      <div class="energy-card">
+        <div class="energy-card-lbl">Daytime energy</div>
+        <div class="energy-card-val" id="resDay">—</div>
+        <div class="energy-card-note">Covered directly by your solar panels.</div>
+      </div>
+      <div class="energy-card night">
+        <div class="energy-card-lbl">Nighttime energy</div>
+        <div class="energy-card-val" id="resNight">—</div>
+        <div class="energy-card-note">Stored in the battery during the day, used at night.</div>
+      </div>
+    </div>
+
+    <div class="savings-grid">
+      <div class="savings-card">
+        <div class="savings-lbl">Grid electricity savings</div>
+        <div class="savings-val" id="savGrid">—</div>
+        <div class="savings-note">Estimated yearly savings on national grid bills.</div>
+      </div>
+      <div class="savings-card">
+        <div class="savings-lbl">Generator fuel savings</div>
+        <div class="savings-val" id="savGen">—</div>
+        <div class="savings-note">Estimated yearly fuel saved when the grid is out.</div>
+      </div>
+      <div class="savings-card payback">
+        <div class="savings-lbl">Payback period</div>
+        <div class="savings-val" id="savPayback">—</div>
+        <div class="savings-note">Years until total savings cover the system cost.</div>
+      </div>
+      <div class="savings-card">
+        <div class="savings-lbl">CO₂ reduction</div>
+        <div class="savings-val" id="savCO2">—</div>
+        <div class="savings-note">Estimated kilograms of CO₂ avoided per year.</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      This is an automated estimate based on the inputs you provided and typical Iraq conditions (5.5 peak sun-hours, average appliance behavior). The final system specification and price will be confirmed by a Blue Ray Energy engineer after a site visit.
+    </div>
+  </section>
+
+  <!-- STEP 5: CONTACT -->
+  <section data-show-step="5">
+    <h2 class="step-title">Talk to a Blue Ray engineer</h2>
+    <p class="step-subtitle">Call us for the fastest response, or send your details and we'll get back to you.</p>
+
+    <div class="contact-hero">
+      <h2>Call us now for a free site visit</h2>
+      <p>Quote your estimated daily energy when you call so we can prepare.</p>
+      <a class="phone-cta" id="phoneCTA" href="tel:">
+        <svg class="phone-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.9.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.9.1.4 0 .8-.3 1.1l-2.2 2.2z"/></svg>
+        <span id="phoneCTAText">+964 XXX XXX XXXX</span>
+      </a>
+    </div>
+
+    <div class="or-divider">or send us your details</div>
+
+    <form class="contact-form" id="contactForm" onsubmit="submitContact(event)">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="cName">Full name</label>
+          <input type="text" id="cName" required>
+        </div>
+        <div class="form-field">
+          <label for="cPhone">Phone number</label>
+          <input type="tel" id="cPhone" required placeholder="07XX XXX XXXX">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="cEmail">Email (optional)</label>
+          <input type="email" id="cEmail">
+        </div>
+        <div class="form-field">
+          <label for="cCity">City / Area</label>
+          <input type="text" id="cCity" placeholder="e.g. Erbil, Baghdad">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-block">Send my details to Blue Ray</button>
+    </form>
+  </section>
+
+</div>
+
+<!-- Sticky nav bar -->
+<nav class="nav-bar" id="navBar">
+  <div class="nav-bar-inner">
+    <button class="btn btn-secondary" id="backBtn" onclick="goBack()">Back</button>
+    <div class="running-total" id="runningTotal"></div>
+    <button class="btn" id="nextBtn" onclick="goNext()">Next</button>
+  </div>
+</nav>
+
+<script>
+/* ============================================================
+   CONFIG — tune these for Blue Ray Energy.
+   Change the numbers below and the entire calculator updates.
+   ============================================================ */
+const CONFIG = {
+  exchangeRate_IQD_per_USD: 1310,
+  peakSunHours: 5.5,
+  systemEfficiency: 0.75,
+  batteryDoD: 0.8,
+  autonomyDays: 1,
+  panel_USD_per_W: 0.70,
+  battery_USD_per_kWh: 600,
+  inverter_USD_per_kW: 250,
+  installationOverheadPct: 0.15,
+  gridTariff_IQD_per_kWh: 120,
+  generatorCost_IQD_per_kWh: 600,
+  outageHoursPerDay: 8,
+  co2_kg_per_kWh_grid: 0.7,
+  companyPhone: "+964 (751) 242 3333",
+  companyEmail: "info@be-iraq.com",
+  companyAddress: "Iraq, Erbil, Bakhtyari",
+  companyHours: "Mon – Tue, 09:00 AM – 06:00 PM"
+};
+
+// Brand logo (base64-embedded so the widget stays a single file).
+// To replace with a different logo: re-encode the file and swap the string below.
+const LOGO_DATA_URI = "data:image/webp;base64,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";
+
+/* ============================================================
+   APPLIANCE PRESET LIBRARY
+   tiers: pick-a-size options (in average operating watts).
+   defaultHours: typical daily run time.
+   dayNight: when the load mostly runs.
+   ============================================================ */
+const APPLIANCES = [
+  // Cooling
+  { id: "split_ac", name: "Split AC", category: "Cooling", defaultHours: 6, dayNight: "both",
+    tiers: [
+      { label: "Small — 12,000 BTU (1 ton)", watts: 1100 },
+      { label: "Medium — 18,000 BTU (1.5 ton)", watts: 1600 },
+      { label: "Large — 24,000 BTU (2 ton)", watts: 2200 },
+      { label: "Extra large — 30,000 BTU (2.5 ton)", watts: 2700 }
+    ]},
+  { id: "window_ac", name: "Window AC", category: "Cooling", defaultHours: 5, dayNight: "both",
+    tiers: [
+      { label: "Small — 9,000 BTU", watts: 900 },
+      { label: "Medium — 12,000 BTU", watts: 1200 },
+      { label: "Large — 18,000 BTU", watts: 1800 }
+    ]},
+  { id: "ceiling_fan", name: "Ceiling fan", category: "Cooling", defaultHours: 8, dayNight: "both",
+    tiers: [ { label: "Standard ceiling fan", watts: 75 } ]},
+  { id: "stand_fan", name: "Stand / table fan", category: "Cooling", defaultHours: 6, dayNight: "both",
+    tiers: [ { label: "Standard stand fan", watts: 60 } ]},
+
+  // Refrigeration
+  { id: "fridge", name: "Refrigerator", category: "Refrigeration", defaultHours: 24, dayNight: "24h",
+    tiers: [
+      { label: "Small (under 250 L)", watts: 50 },
+      { label: "Medium (250–400 L)", watts: 70 },
+      { label: "Large (over 400 L)", watts: 100 }
+    ]},
+  { id: "freezer", name: "Freezer", category: "Refrigeration", defaultHours: 24, dayNight: "24h",
+    tiers: [
+      { label: "Chest freezer", watts: 60 },
+      { label: "Upright freezer", watts: 80 }
+    ]},
+
+  // Lighting
+  { id: "led_bulb", name: "LED bulbs", category: "Lighting", defaultHours: 5, dayNight: "night",
+    tiers: [ { label: "Standard LED bulb (10 W each)", watts: 10 } ]},
+  { id: "ceiling_light", name: "Ceiling light panel", category: "Lighting", defaultHours: 5, dayNight: "night",
+    tiers: [
+      { label: "Small panel (15 W)", watts: 15 },
+      { label: "Medium panel (30 W)", watts: 30 },
+      { label: "Large panel (60 W)", watts: 60 }
+    ]},
+
+  // Electronics
+  { id: "tv", name: "Television", category: "Electronics", defaultHours: 4, dayNight: "night",
+    tiers: [
+      { label: "Small — 32\"", watts: 50 },
+      { label: "Medium — 43\"", watts: 80 },
+      { label: "Large — 55\"", watts: 120 },
+      { label: "Extra large — 65\"+", watts: 160 }
+    ]},
+  { id: "laptop", name: "Laptop", category: "Electronics", defaultHours: 4, dayNight: "both",
+    tiers: [ { label: "Standard laptop", watts: 60 } ]},
+  { id: "desktop", name: "Desktop PC", category: "Electronics", defaultHours: 4, dayNight: "both",
+    tiers: [
+      { label: "Office desktop", watts: 200 },
+      { label: "Gaming desktop", watts: 400 }
+    ]},
+  { id: "router", name: "Wi-Fi router", category: "Electronics", defaultHours: 24, dayNight: "24h",
+    tiers: [ { label: "Standard router", watts: 10 } ]},
+  { id: "satellite", name: "Satellite receiver", category: "Electronics", defaultHours: 4, dayNight: "night",
+    tiers: [ { label: "Standard receiver", watts: 25 } ]},
+
+  // Kitchen
+  { id: "microwave", name: "Microwave", category: "Kitchen", defaultHours: 0.3, dayNight: "day",
+    tiers: [ { label: "Standard microwave", watts: 1000 } ]},
+  { id: "oven", name: "Electric oven", category: "Kitchen", defaultHours: 0.5, dayNight: "day",
+    tiers: [
+      { label: "Small countertop", watts: 1200 },
+      { label: "Full-size electric oven", watts: 2000 }
+    ]},
+  { id: "kettle", name: "Electric kettle", category: "Kitchen", defaultHours: 0.2, dayNight: "day",
+    tiers: [ { label: "Standard kettle", watts: 1500 } ]},
+  { id: "coffee", name: "Coffee maker", category: "Kitchen", defaultHours: 0.2, dayNight: "day",
+    tiers: [ { label: "Standard coffee maker", watts: 800 } ]},
+  { id: "toaster", name: "Toaster", category: "Kitchen", defaultHours: 0.1, dayNight: "day",
+    tiers: [ { label: "Standard toaster", watts: 900 } ]},
+  { id: "dishwasher", name: "Dishwasher", category: "Kitchen", defaultHours: 1, dayNight: "day",
+    tiers: [ { label: "Standard dishwasher", watts: 1500 } ]},
+
+  // Laundry
+  { id: "washer", name: "Washing machine", category: "Laundry", defaultHours: 1, dayNight: "day",
+    tiers: [
+      { label: "Standard (cold wash)", watts: 500 },
+      { label: "With heater (hot wash)", watts: 1500 }
+    ]},
+  { id: "dryer", name: "Clothes dryer", category: "Laundry", defaultHours: 0.5, dayNight: "day",
+    tiers: [ { label: "Electric dryer", watts: 2500 } ]},
+  { id: "iron", name: "Clothes iron", category: "Laundry", defaultHours: 0.3, dayNight: "day",
+    tiers: [ { label: "Standard iron", watts: 1200 } ]},
+
+  // Water
+  { id: "water_heater", name: "Electric water heater", category: "Water", defaultHours: 2, dayNight: "both",
+    tiers: [
+      { label: "Tank heater (storage)", watts: 2000 },
+      { label: "Instant / tankless", watts: 5000 }
+    ]},
+  { id: "water_pump", name: "Water pump", category: "Water", defaultHours: 1, dayNight: "day",
+    tiers: [
+      { label: "Small (½ HP)", watts: 370 },
+      { label: "Standard (1 HP)", watts: 750 },
+      { label: "Large (1.5 HP)", watts: 1100 }
+    ]},
+  { id: "hair_dryer", name: "Hair dryer", category: "Water", defaultHours: 0.15, dayNight: "day",
+    tiers: [ { label: "Standard hair dryer", watts: 1500 } ]},
+
+  // Other
+  { id: "other", name: "Other appliance", category: "Other", defaultHours: 2, dayNight: "both",
+    tiers: [ { label: "Custom — enter watts manually", watts: 100 } ]}
+];
+
+const CATEGORIES = ["Cooling", "Refrigeration", "Lighting", "Electronics", "Kitchen", "Laundry", "Water", "Other"];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  currentStep: 1,
+  activeCategory: "Cooling",
+  // selected[applianceId] = { qty, tierIndex, customWatts, hoursOverride, manualMode }
+  selected: {},
+  lastResult: null
+};
+
+/* ============================================================
+   CORE CALCULATIONS
+   ============================================================ */
+function applianceWatts(appId, sel) {
+  if (sel.manualMode && sel.customWatts > 0) return sel.customWatts;
+  const app = APPLIANCES.find(a => a.id === appId);
+  if (!app) return 0;
+  const tier = app.tiers[sel.tierIndex || 0];
+  return tier ? tier.watts : 0;
+}
+
+function applianceHours(appId, sel) {
+  if (typeof sel.hoursOverride === "number") return sel.hoursOverride;
+  const app = APPLIANCES.find(a => a.id === appId);
+  return app ? app.defaultHours : 0;
+}
+
+function applianceDailyKWh(appId, sel) {
+  return (applianceWatts(appId, sel) * applianceHours(appId, sel) * (sel.qty || 1)) / 1000;
+}
+
+function totalDaily() {
+  return Object.entries(state.selected).reduce(
+    (sum, [id, sel]) => sum + applianceDailyKWh(id, sel), 0
+  );
+}
+
+function calculate() {
+  let totalDaily = 0, dayEnergy = 0, nightEnergy = 0;
+
+  for (const [id, sel] of Object.entries(state.selected)) {
+    const kwh = applianceDailyKWh(id, sel);
+    totalDaily += kwh;
+    const app = APPLIANCES.find(a => a.id === id);
+    const dn = app ? app.dayNight : "both";
+    if (dn === "day") dayEnergy += kwh;
+    else if (dn === "night") nightEnergy += kwh;
+    else { dayEnergy += kwh * 0.5; nightEnergy += kwh * 0.5; }
+  }
+
+  const panelKW = totalDaily / (CONFIG.peakSunHours * CONFIG.systemEfficiency);
+  const batteryKWh = (nightEnergy * CONFIG.autonomyDays) / CONFIG.batteryDoD;
+  const inverterKW = Math.max(panelKW, 1);
+
+  const panelCostUSD = panelKW * 1000 * CONFIG.panel_USD_per_W;
+  const batteryCostUSD = batteryKWh * CONFIG.battery_USD_per_kWh;
+  const inverterCostUSD = inverterKW * CONFIG.inverter_USD_per_kW;
+  const equipmentUSD = panelCostUSD + batteryCostUSD + inverterCostUSD;
+  const totalUSD = equipmentUSD * (1 + CONFIG.installationOverheadPct);
+  const totalIQD = totalUSD * CONFIG.exchangeRate_IQD_per_USD;
+
+  const gridSavingsIQD = totalDaily * 365 * CONFIG.gridTariff_IQD_per_kWh;
+  const outageShare = CONFIG.outageHoursPerDay / 24;
+  const generatorSavingsIQD = totalDaily * 365 * outageShare * CONFIG.generatorCost_IQD_per_kWh;
+  const totalAnnualSavings = gridSavingsIQD + generatorSavingsIQD;
+  const paybackYears = totalAnnualSavings > 0 ? totalIQD / totalAnnualSavings : Infinity;
+  const co2Saved = totalDaily * 365 * CONFIG.co2_kg_per_kWh_grid;
+
+  return {
+    totalDaily, dayEnergy, nightEnergy,
+    panelKW, batteryKWh, inverterKW,
+    panelCostUSD, batteryCostUSD, inverterCostUSD,
+    totalUSD, totalIQD,
+    gridSavingsIQD, generatorSavingsIQD, paybackYears, co2Saved
+  };
+}
+
+/* ============================================================
+   FORMATTERS
+   ============================================================ */
+function fmtIQD(n) {
+  if (!isFinite(n)) return "—";
+  return Math.round(n).toLocaleString("en-US") + " IQD";
+}
+function fmtUSD(n) {
+  if (!isFinite(n)) return "—";
+  return "$" + Math.round(n).toLocaleString("en-US");
+}
+function fmtKWh(n, d = 1) {
+  if (!isFinite(n)) return "—";
+  return n.toFixed(d) + " kWh";
+}
+function fmtKW(n, d = 2) {
+  if (!isFinite(n)) return "—";
+  return n.toFixed(d) + " kW";
+}
+
+/* ============================================================
+   STEP 2 — RENDER APPLIANCE LIBRARY
+   All categories render at once, grouped by header. Tabs at top
+   are quick-jump anchors so users don't have to scroll.
+   ============================================================ */
+function renderCategoryTabs() {
+  const wrap = document.getElementById("categoryTabs");
+  wrap.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "category-tab";
+    btn.textContent = cat;
+    btn.onclick = () => {
+      const target = document.getElementById("cat-" + cat);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderApplianceGrid() {
+  const wrap = document.getElementById("applianceGrid");
+  wrap.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    const section = document.createElement("div");
+    section.className = "category-section";
+    section.id = "cat-" + cat;
+
+    const heading = document.createElement("h3");
+    heading.className = "category-heading";
+    heading.textContent = cat;
+    section.appendChild(heading);
+
+    const grid = document.createElement("div");
+    grid.className = "appliance-cards";
+    APPLIANCES.filter(a => a.category === cat).forEach(app => {
+      const card = document.createElement("div");
+      const isSelected = !!state.selected[app.id];
+      card.className = "appliance-card" + (isSelected ? " selected" : "");
+      card.innerHTML = `
+        <div class="appliance-card-name">${app.name}</div>
+        <div class="appliance-card-cat">${isSelected ? "Added — adjust on the right" : "Tap to add"}</div>
+      `;
+      card.onclick = () => toggleAppliance(app.id);
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+    wrap.appendChild(section);
+  });
+}
+
+function toggleAppliance(appId) {
+  if (state.selected[appId]) {
+    delete state.selected[appId];
+  } else {
+    // "Other" defaults to manual-watt entry — no preset makes sense for it.
+    const isOther = appId === "other";
+    state.selected[appId] = {
+      qty: 1,
+      tierIndex: 0,
+      customWatts: isOther ? 100 : 0,
+      hoursOverride: undefined,
+      manualMode: isOther
+    };
+  }
+  renderApplianceGrid();
+  renderSelectedList();
+  updateRunningTotal();
+}
+
+function removeAppliance(appId) {
+  delete state.selected[appId];
+  renderApplianceGrid();
+  renderSelectedList();
+  updateRunningTotal();
+}
+
+function renderSelectedList() {
+  const wrap = document.getElementById("selectedList");
+  const ids = Object.keys(state.selected);
+  if (ids.length === 0) {
+    wrap.innerHTML = `<div class="selected-empty">No appliances added yet. Tap an appliance on the left to begin.</div>`;
+    document.getElementById("selectedTotal").textContent = "0 kWh/day";
+    return;
+  }
+  wrap.innerHTML = "";
+  ids.forEach(id => {
+    const app = APPLIANCES.find(a => a.id === id);
+    const sel = state.selected[id];
+    const kwh = applianceDailyKWh(id, sel);
+    const watts = applianceWatts(id, sel);
+    const hours = applianceHours(id, sel);
+
+    const item = document.createElement("div");
+    item.className = "selected-item";
+
+    const tierOptions = app.tiers.map((t, i) =>
+      `<option value="${i}" ${sel.tierIndex === i ? "selected" : ""}>${t.label}</option>`
+    ).join("");
+
+    item.innerHTML = `
+      <div class="selected-item-top">
+        <div class="selected-item-name">${app.name}</div>
+        <button class="remove-btn" title="Remove" onclick="removeAppliance('${id}')">×</button>
+      </div>
+
+      <div class="control-row">
+        <label>Quantity</label>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty('${id}', -1)">−</button>
+          <span class="qty-val">${sel.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${id}', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="control-row">
+        <label>${sel.manualMode ? "Watts (each)" : "Size"}</label>
+        ${sel.manualMode
+          ? `<input type="number" min="1" value="${sel.customWatts || watts}" oninput="setCustomWatts('${id}', this.value)">`
+          : `<select onchange="setTier('${id}', this.value)">${tierOptions}</select>`}
+      </div>
+
+      <div class="control-row">
+        <label>Hours per day</label>
+        <input type="number" min="0" max="24" step="0.1" value="${hours}" oninput="setHours('${id}', this.value)">
+      </div>
+
+      <div class="control-row" style="margin-top:8px;">
+        <button class="advanced-toggle" onclick="toggleManual('${id}')">
+          ${sel.manualMode ? "Use preset sizes instead" : "I know the exact watts"}
+        </button>
+        <div class="selected-item-kwh"><b>${kwh.toFixed(2)} kWh</b>/day</div>
+      </div>
+    `;
+    wrap.appendChild(item);
+  });
+  document.getElementById("selectedTotal").textContent = totalDaily().toFixed(1) + " kWh/day";
+}
+
+function changeQty(id, delta) {
+  const sel = state.selected[id];
+  sel.qty = Math.max(1, (sel.qty || 1) + delta);
+  renderSelectedList();
+  updateRunningTotal();
+}
+function setTier(id, val) {
+  state.selected[id].tierIndex = parseInt(val, 10);
+  renderSelectedList();
+  updateRunningTotal();
+}
+function setCustomWatts(id, val) {
+  state.selected[id].customWatts = parseFloat(val) || 0;
+  renderSelectedList();
+  updateRunningTotal();
+}
+function setHours(id, val) {
+  const v = parseFloat(val);
+  state.selected[id].hoursOverride = isNaN(v) ? undefined : Math.min(24, Math.max(0, v));
+  renderSelectedList();
+  updateRunningTotal();
+}
+function toggleManual(id) {
+  const sel = state.selected[id];
+  sel.manualMode = !sel.manualMode;
+  if (sel.manualMode && !sel.customWatts) {
+    sel.customWatts = applianceWatts(id, { ...sel, manualMode: false });
+  }
+  renderSelectedList();
+  updateRunningTotal();
+}
+
+/* ============================================================
+   STEP 3 — REVIEW
+   ============================================================ */
+function renderReview() {
+  const table = document.getElementById("reviewTable");
+  const ids = Object.keys(state.selected);
+
+  let rows = `
+    <thead><tr>
+      <th>Appliance</th><th>Qty</th><th>Watts</th><th>Hours/day</th><th>kWh/day</th>
+    </tr></thead><tbody>
+  `;
+
+  if (ids.length === 0) {
+    rows += `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px;">No appliances selected. Go back and add some.</td></tr>`;
+  } else {
+    ids.forEach(id => {
+      const app = APPLIANCES.find(a => a.id === id);
+      const sel = state.selected[id];
+      rows += `<tr>
+        <td><b>${app.name}</b></td>
+        <td>${sel.qty}</td>
+        <td>${applianceWatts(id, sel)} W</td>
+        <td>${applianceHours(id, sel)}</td>
+        <td>${applianceDailyKWh(id, sel).toFixed(2)}</td>
+      </tr>`;
+    });
+  }
+
+  const c = calculate();
+  rows += `</tbody><tfoot><tr>
+    <td colspan="4">Total daily energy</td>
+    <td>${c.totalDaily.toFixed(2)} kWh</td>
+  </tr></tfoot>`;
+
+  table.innerHTML = rows;
+
+  document.getElementById("summaryDaily").textContent = c.totalDaily.toFixed(1);
+  document.getElementById("summaryDay").textContent = c.dayEnergy.toFixed(1);
+  document.getElementById("summaryNight").textContent = c.nightEnergy.toFixed(1);
+}
+
+/* ============================================================
+   STEP 4 — RESULTS
+   ============================================================ */
+function renderResults() {
+  const c = calculate();
+  state.lastResult = c;
+
+  document.getElementById("priceIQD").textContent = fmtIQD(c.totalIQD);
+  document.getElementById("priceUSD").textContent = "≈ " + fmtUSD(c.totalUSD);
+  document.getElementById("sysPanel").textContent = fmtKW(c.panelKW);
+  document.getElementById("sysBattery").textContent = c.batteryKWh.toFixed(1) + " kWh";
+  document.getElementById("sysInverter").textContent = fmtKW(c.inverterKW);
+
+  document.getElementById("resDay").textContent = fmtKWh(c.dayEnergy);
+  document.getElementById("resNight").textContent = fmtKWh(c.nightEnergy);
+
+  document.getElementById("savGrid").textContent = fmtIQD(c.gridSavingsIQD) + "/yr";
+  document.getElementById("savGen").textContent = fmtIQD(c.generatorSavingsIQD) + "/yr";
+  document.getElementById("savPayback").textContent = isFinite(c.paybackYears)
+    ? c.paybackYears.toFixed(1) + " years" : "—";
+  document.getElementById("savCO2").textContent = Math.round(c.co2Saved).toLocaleString() + " kg/yr";
+
+  const phoneHref = "tel:" + CONFIG.companyPhone.replace(/\s+/g, "");
+  document.getElementById("phoneCTAResults").setAttribute("href", phoneHref);
+  document.getElementById("phoneCTAResultsText").textContent = "Call " + CONFIG.companyPhone;
+}
+
+/* ============================================================
+   STEP 5 — CONTACT
+   ============================================================ */
+function renderContact() {
+  const phoneText = CONFIG.companyPhone;
+  const phoneHref = "tel:" + phoneText.replace(/\s+/g, "");
+  document.getElementById("phoneCTA").setAttribute("href", phoneHref);
+  document.getElementById("phoneCTAText").textContent = phoneText;
+}
+
+function submitContact(e) {
+  e.preventDefault();
+  const name = document.getElementById("cName").value.trim();
+  const phone = document.getElementById("cPhone").value.trim();
+  const email = document.getElementById("cEmail").value.trim();
+  const city = document.getElementById("cCity").value.trim();
+  const c = state.lastResult || calculate();
+
+  const lines = [];
+  lines.push("New solar calculator lead from website:");
+  lines.push("");
+  lines.push("Name: " + name);
+  lines.push("Phone: " + phone);
+  if (email) lines.push("Email: " + email);
+  if (city) lines.push("City: " + city);
+  lines.push("");
+  lines.push("--- Estimated system ---");
+  lines.push("Daily energy: " + c.totalDaily.toFixed(1) + " kWh");
+  lines.push("Day / Night: " + c.dayEnergy.toFixed(1) + " / " + c.nightEnergy.toFixed(1) + " kWh");
+  lines.push("Solar panels: " + c.panelKW.toFixed(2) + " kW");
+  lines.push("Battery: " + c.batteryKWh.toFixed(1) + " kWh");
+  lines.push("Inverter: " + c.inverterKW.toFixed(2) + " kW");
+  lines.push("Estimated price: " + fmtIQD(c.totalIQD) + " (" + fmtUSD(c.totalUSD) + ")");
+  lines.push("");
+  lines.push("--- Appliances ---");
+  Object.entries(state.selected).forEach(([id, sel]) => {
+    const app = APPLIANCES.find(a => a.id === id);
+    lines.push("- " + app.name + " ×" + sel.qty + " @ " + applianceWatts(id, sel) + "W × " + applianceHours(id, sel) + "h");
+  });
+
+  const subject = encodeURIComponent("Solar quote request — " + name);
+  const body = encodeURIComponent(lines.join("\n"));
+  window.location.href = `mailto:${CONFIG.companyEmail}?subject=${subject}&body=${body}`;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function goToStep(n) {
+  state.currentStep = n;
+  document.body.setAttribute("data-step", String(n));
+
+  const dots = document.querySelectorAll("#progress .progress-dot");
+  dots.forEach((d, i) => {
+    d.classList.remove("active", "done");
+    if (i + 1 < n) d.classList.add("done");
+    else if (i + 1 === n) d.classList.add("active");
+  });
+
+  if (n === 2) { renderCategoryTabs(); renderApplianceGrid(); renderSelectedList(); }
+  if (n === 3) renderReview();
+  if (n === 4) renderResults();
+  if (n === 5) renderContact();
+
+  updateNav();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function goNext() {
+  if (state.currentStep === 2 && Object.keys(state.selected).length === 0) {
+    alert("Please add at least one appliance before continuing.");
+    return;
+  }
+  if (state.currentStep < 5) goToStep(state.currentStep + 1);
+}
+function goBack() {
+  if (state.currentStep > 1) goToStep(state.currentStep - 1);
+}
+
+function updateNav() {
+  const nav = document.getElementById("navBar");
+  const back = document.getElementById("backBtn");
+  const next = document.getElementById("nextBtn");
+
+  if (state.currentStep === 1) {
+    nav.style.display = "none";
+    return;
+  }
+  nav.style.display = "flex";
+  back.style.visibility = state.currentStep === 1 ? "hidden" : "visible";
+
+  if (state.currentStep === 4) {
+    next.textContent = "Get a quote";
+  } else if (state.currentStep === 5) {
+    next.style.display = "none";
+  } else {
+    next.textContent = "Next";
+    next.style.display = "";
+  }
+
+  if (state.currentStep === 5) next.style.display = "none";
+  else next.style.display = "";
+
+  updateRunningTotal();
+}
+
+function updateRunningTotal() {
+  const el = document.getElementById("runningTotal");
+  if (state.currentStep === 2) {
+    el.innerHTML = `Total: <b>${totalDaily().toFixed(1)} kWh/day</b>`;
+  } else if (state.currentStep === 3 || state.currentStep === 4) {
+    el.innerHTML = `Total: <b>${totalDaily().toFixed(1)} kWh/day</b>`;
+  } else {
+    el.innerHTML = "";
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.getElementById("brandLogo").src = LOGO_DATA_URI;
+goToStep(1);
+</script>
+</body>
+</html>
