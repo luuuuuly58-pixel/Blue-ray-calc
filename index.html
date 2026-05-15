@@ -1420,7 +1420,11 @@ function calculate() {
   const totalUSD = equipmentUSD * (1 + CONFIG.installationOverheadPct);
   const totalIQD = totalUSD * CONFIG.exchangeRate_IQD_per_USD;
 
-  const monthlyKWh = totalDaily * (365 / 12);
+  // Round to whole kWh before billing so the displayed "X kWh/mo" matches
+  // the displayed bill exactly. The sub-kWh precision (<0.2% error) isn't
+  // useful — and showing "273 kWh × 72 IQD" while billing 272.5 kWh × 72
+  // confuses anyone who checks the math.
+  const monthlyKWh = Math.round(totalDaily * (365 / 12));
   const monthlyBillIQD = tieredMonthlyBillIQD(monthlyKWh);
   const annualBillIQD = monthlyBillIQD * 12;
   const paybackYears = annualBillIQD > 0 ? totalIQD / annualBillIQD : Infinity;
@@ -1701,7 +1705,7 @@ function renderResults() {
   const annualBillUSD = c.annualBillIQD / CONFIG.exchangeRate_IQD_per_USD;
   document.getElementById("savMonthly").textContent = fmtUSD(monthlyBillUSD) + t("perMoUnit");
   document.getElementById("savMonthlyNote").textContent =
-    t("monthlyBillNote", { iqd: fmtIQD(c.monthlyBillIQD), kwh: Math.round(c.monthlyKWh) });
+    t("monthlyBillNote", { iqd: fmtIQD(c.monthlyBillIQD), kwh: c.monthlyKWh });
   document.getElementById("savYearly").textContent = fmtUSD(annualBillUSD) + t("perYrUnit");
   document.getElementById("savYearlyNote").textContent =
     t("yearlyBillNote", { iqd: fmtIQD(c.annualBillIQD) });
