@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ckb" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solar Calculator | Blue Ray Energy</title>
+<title>هەژمێرکاری خۆرەکی | Blue Ray Energy</title>
 <style>
   :root {
     --primary: #0a4f8c;
@@ -664,6 +664,69 @@
     .review-table { font-size: 12px; }
     .review-table th, .review-table td { padding: 8px 4px; }
   }
+
+  /* ============================================================
+     LANGUAGE SWITCHER
+     ============================================================ */
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .lang-switcher {
+    display: inline-flex;
+    background: white;
+    border-radius: 999px;
+    padding: 3px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .lang-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s;
+  }
+  .lang-btn:hover { color: var(--primary); }
+  .lang-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+  .lang-btn.active:hover { color: white; }
+
+  /* ============================================================
+     RTL ADJUSTMENTS — applied when <html dir="rtl">
+     The layout mostly mirrors automatically via flexbox + logical
+     properties, but a few visual details need tuning.
+     ============================================================ */
+  html[dir="rtl"] body {
+    /* Segoe UI handles Arabic/Kurdish well on Windows; system fonts
+       cover the same glyph set on macOS/iOS/Android. */
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Tahoma", "Noto Sans Arabic", Arial, sans-serif;
+  }
+  html[dir="rtl"] .quote-price-secondary,
+  html[dir="rtl"] .savings-note,
+  html[dir="rtl"] .energy-card-note,
+  html[dir="rtl"] .summary-stat-lbl,
+  html[dir="rtl"] .welcome-feature-text,
+  html[dir="rtl"] .step-subtitle,
+  html[dir="rtl"] .disclaimer,
+  html[dir="rtl"] .selected-empty {
+    /* Slightly increased line-height makes Arabic-script glyphs breathe. */
+    line-height: 1.7;
+  }
+  html[dir="rtl"] .lang-btn[data-lang="ckb"] {
+    font-size: 14px;
+  }
+  /* Keep tabular figures (price, kWh) readable inside RTL paragraphs:
+     numbers are LTR runs and bidi handles them automatically — no override. */
 </style>
 </head>
 <body data-step="1">
@@ -673,45 +736,51 @@
     <div class="brand">
       <img class="brand-logo" id="brandLogo" alt="Blue Ray Energy">
       <div>
-        <div class="brand-sub">Solar System Calculator</div>
+        <div class="brand-sub" data-i18n="brandSub">هەژمێرکاری سیستەمی خۆرەکی</div>
       </div>
     </div>
-    <div class="progress" id="progress">
-      <div class="progress-dot active"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
+    <div class="header-right">
+      <div class="lang-switcher" id="langSwitcher" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="ckb" type="button" onclick="setLanguage('ckb')">کوردی</button>
+        <button class="lang-btn" data-lang="en" type="button" onclick="setLanguage('en')">EN</button>
+      </div>
+      <div class="progress" id="progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+      </div>
     </div>
   </header>
 
   <!-- STEP 1: WELCOME -->
   <section data-show-step="1">
     <div class="welcome-card">
-      <h1>Find the right solar system for your home</h1>
-      <p>Tell us what's in your home. We'll estimate your daily energy needs, recommend a system size, and show you the cost — in just a few minutes.</p>
+      <h1 data-i18n="welcomeTitle">سیستەمی خۆرەکی گونجاو بۆ ماڵەکەت بدۆزەرەوە</h1>
+      <p data-i18n="welcomeIntro">پێمان بڵێ چی لە ماڵەکەتدا هەیە. ئێمە پێداویستی ڕۆژانەی وزەت دەخەمڵێنین، قەبارەی سیستەم پێشنیار دەکەین و نرخی پیشان دەدەین — تەنها لە چەند خولەکێکدا.</p>
       <div class="welcome-features">
         <div class="welcome-feature">
           <div class="welcome-feature-num">1</div>
-          <div class="welcome-feature-text">Add your home's appliances. Easy presets or exact wattage — your choice.</div>
+          <div class="welcome-feature-text" data-i18n="welcomeBullet1">ئامرازەکانی ماڵەکەت زیاد بکە. هەڵبژاردنی ئامادە یان واتە دروست — هەڵبژاردن لای تۆیە.</div>
         </div>
         <div class="welcome-feature">
           <div class="welcome-feature-num">2</div>
-          <div class="welcome-feature-text">See your daily energy use, split into daytime and nighttime needs.</div>
+          <div class="welcome-feature-text" data-i18n="welcomeBullet2">بەکارهێنانی وزەی ڕۆژانەت ببینە، دابەشکراو بەسەر پێداویستی ڕۆژ و شەو.</div>
         </div>
         <div class="welcome-feature">
           <div class="welcome-feature-num">3</div>
-          <div class="welcome-feature-text">Get a sized system with a transparent price and yearly savings estimate.</div>
+          <div class="welcome-feature-text" data-i18n="welcomeBullet3">سیستەمێکی پێوەرکراو وەربگرە لەگەڵ نرخێکی ڕوون و خەمڵاندنی پاشەکەوتی ساڵانە.</div>
         </div>
       </div>
-      <button class="btn btn-accent" onclick="goToStep(2)">Start the calculator</button>
+      <button class="btn btn-accent" onclick="goToStep(2)" data-i18n="welcomeCTA">دەستپێکردنی هەژمێرکار</button>
     </div>
   </section>
 
   <!-- STEP 2: APPLIANCES -->
   <section data-show-step="2">
-    <h2 class="step-title">What's in your home?</h2>
-    <p class="step-subtitle">Scroll through every category below and tap each appliance you have. Adjust quantity, size, and hours on the right.</p>
+    <h2 class="step-title" data-i18n="step2Title">چی لە ماڵەکەتدا هەیە؟</h2>
+    <p class="step-subtitle" data-i18n="step2Subtitle">بەسەر هەموو پۆلەکاندا بشۆڕێوە و کرتە لەسەر هەر ئامرازێک بکە کە هەتە. ژمارە، قەبارە و کاتژمێر لە لای ڕاست ڕێک بخە.</p>
     <div class="layout-2col">
       <div class="panel">
         <div class="category-tabs" id="categoryTabs"></div>
@@ -719,11 +788,11 @@
       </div>
       <div class="selected-panel panel">
         <div class="selected-header">
-          <h3>Your home</h3>
-          <span class="selected-total" id="selectedTotal">0 kWh/day</span>
+          <h3 data-i18n="yourHome">ماڵەکەت</h3>
+          <span class="selected-total" id="selectedTotal">0 kWh/ڕۆژ</span>
         </div>
         <div id="selectedList">
-          <div class="selected-empty">No appliances added yet. Tap an appliance on the left to begin.</div>
+          <div class="selected-empty" data-i18n="emptyApplianceList">هیچ ئامرازێک زیاد نەکراوە. کرتە لەسەر ئامرازێکی لای چەپ بکە بۆ دەستپێکردن.</div>
         </div>
       </div>
     </div>
@@ -731,22 +800,22 @@
 
   <!-- STEP 3: REVIEW -->
   <section data-show-step="3">
-    <h2 class="step-title">Review your usage</h2>
-    <p class="step-subtitle">Here's what we'll use to size your system. Go back to step 2 if you'd like to adjust.</p>
+    <h2 class="step-title" data-i18n="step3Title">پێداچوونەوەی بەکارهێنانەکەت</h2>
+    <p class="step-subtitle" data-i18n="step3Subtitle">ئەمە ئەو زانیاریانەن کە بەکاریان دەهێنین بۆ پێوەرکردنی سیستەمەکەت. بگەڕێوە بۆ هەنگاوی ٢ ئەگەر دەتەوێت ڕێکی بخەیتەوە.</p>
     <div class="panel">
       <table class="review-table" id="reviewTable"></table>
       <div class="summary-row">
         <div class="summary-stat">
           <div class="summary-stat-val" id="summaryDaily">—</div>
-          <div class="summary-stat-lbl">Total kWh per day</div>
+          <div class="summary-stat-lbl" data-i18n="summaryDailyLbl">کۆی کیلۆوات/کاتژمێر بۆ ڕۆژێک</div>
         </div>
         <div class="summary-stat">
           <div class="summary-stat-val" id="summaryDay">—</div>
-          <div class="summary-stat-lbl">Daytime use (kWh)</div>
+          <div class="summary-stat-lbl" data-i18n="summaryDayLbl">بەکارهێنانی ڕۆژ (kWh)</div>
         </div>
         <div class="summary-stat">
           <div class="summary-stat-val" id="summaryNight">—</div>
-          <div class="summary-stat-lbl">Nighttime use (kWh)</div>
+          <div class="summary-stat-lbl" data-i18n="summaryNightLbl">بەکارهێنانی شەو (kWh)</div>
         </div>
       </div>
     </div>
@@ -754,112 +823,112 @@
 
   <!-- STEP 4: RESULTS -->
   <section data-show-step="4">
-    <h2 class="step-title">Your recommended system</h2>
-    <p class="step-subtitle">Built around your usage profile. Solar panels cover daytime energy; the battery covers your night usage and outages.</p>
+    <h2 class="step-title" data-i18n="step4Title">سیستەمی پێشنیارکراو بۆ تۆ</h2>
+    <p class="step-subtitle" data-i18n="step4Subtitle">دروستکراو لەسەر شێوازی بەکارهێنانت. پانێڵە خۆرەکییەکان وزەی ڕۆژ دابین دەکەن؛ پاتری بەکارهێنانی شەو دادەپۆشێت.</p>
 
     <div class="quote-card">
-      <div class="quote-label">Estimated installed price</div>
+      <div class="quote-label" data-i18n="quoteLabel">نرخی خەمڵێنراوی دامەزراندن</div>
       <div class="quote-price-primary" id="priceUSD">—</div>
       <div class="quote-price-secondary" id="priceIQD">—</div>
       <div class="quote-sys">
         <div class="quote-sys-item">
           <div class="quote-sys-val" id="sysPanel">—</div>
-          <div class="quote-sys-lbl">Solar panels</div>
+          <div class="quote-sys-lbl" data-i18n="sysPanelLbl">پانێڵە خۆرەکییەکان</div>
         </div>
         <div class="quote-sys-item">
           <div class="quote-sys-val" id="sysBattery">—</div>
-          <div class="quote-sys-lbl">Battery storage</div>
+          <div class="quote-sys-lbl" data-i18n="sysBatteryLbl">خەزنکراوی پاتری</div>
         </div>
         <div class="quote-sys-item">
           <div class="quote-sys-val" id="sysInverter">—</div>
-          <div class="quote-sys-lbl">Inverter</div>
+          <div class="quote-sys-lbl" data-i18n="sysInverterLbl">ئینڤێرتەر</div>
         </div>
       </div>
       <a class="phone-cta phone-cta-inline" id="phoneCTAResults" href="tel:">
         <svg class="phone-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.9.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.9.1.4 0 .8-.3 1.1l-2.2 2.2z"/></svg>
-        <span id="phoneCTAResultsText">Call us for an exact quote</span>
+        <span id="phoneCTAResultsText">پەیوەندیمان پێوە بکە بۆ نرخێکی دروست</span>
       </a>
     </div>
 
     <div class="energy-split">
       <div class="energy-card">
-        <div class="energy-card-lbl">Daytime energy</div>
+        <div class="energy-card-lbl" data-i18n="dayEnergyLbl">وزەی ڕۆژ</div>
         <div class="energy-card-val" id="resDay">—</div>
-        <div class="energy-card-note">Covered directly by your solar panels.</div>
+        <div class="energy-card-note" data-i18n="dayEnergyNote">ڕاستەوخۆ لەلایەن پانێڵە خۆرەکییەکانتەوە دابین دەکرێت.</div>
       </div>
       <div class="energy-card night">
-        <div class="energy-card-lbl">Nighttime energy</div>
+        <div class="energy-card-lbl" data-i18n="nightEnergyLbl">وزەی شەو</div>
         <div class="energy-card-val" id="resNight">—</div>
-        <div class="energy-card-note">Stored in the battery during the day, used at night.</div>
+        <div class="energy-card-note" data-i18n="nightEnergyNote">بە درێژایی ڕۆژ لە پاتریدا هەڵدەگیرێت، بە شەو بەکار دێت.</div>
       </div>
     </div>
 
     <div class="savings-grid">
       <div class="savings-card">
-        <div class="savings-lbl">Monthly electricity bill avoided</div>
+        <div class="savings-lbl" data-i18n="savMonthlyLbl">نرخی کارەبای مانگانە کە لێی ڕزگار دەبیت</div>
         <div class="savings-val" id="savMonthly">—</div>
-        <div class="savings-note" id="savMonthlyNote">What you'd otherwise pay the government grid each month.</div>
+        <div class="savings-note" id="savMonthlyNote">ئەو پارەیەی کە بێ سیستەمی خۆرەکی مانگانە بە حکومەت دەدەیت.</div>
       </div>
       <div class="savings-card">
-        <div class="savings-lbl">Yearly electricity bill avoided</div>
+        <div class="savings-lbl" data-i18n="savYearlyLbl">نرخی کارەبای ساڵانە کە لێی ڕزگار دەبیت</div>
         <div class="savings-val" id="savYearly">—</div>
-        <div class="savings-note" id="savYearlyNote">Estimated yearly savings based on Iraq's tiered residential tariff.</div>
+        <div class="savings-note" id="savYearlyNote">خەمڵاندنی پاشەکەوتی ساڵانە بەپێی نرخی پلەبەندیکراوی کارەبا لە عێراق.</div>
       </div>
       <div class="savings-card payback">
-        <div class="savings-lbl">Payback period</div>
+        <div class="savings-lbl" data-i18n="savPaybackLbl">ماوەی گەڕانەوەی نرخ</div>
         <div class="savings-val" id="savPayback">—</div>
-        <div class="savings-note">Years until total savings cover the system cost.</div>
+        <div class="savings-note" data-i18n="savPaybackNote">ساڵی پێویست تا کۆی پاشەکەوت نرخی سیستەمەکە بدۆزێتەوە.</div>
       </div>
       <div class="savings-card">
-        <div class="savings-lbl">CO₂ reduction</div>
+        <div class="savings-lbl" data-i18n="savCO2Lbl">کەمکردنەوەی CO₂</div>
         <div class="savings-val" id="savCO2">—</div>
-        <div class="savings-note">Estimated kilograms of CO₂ avoided per year.</div>
+        <div class="savings-note" data-i18n="savCO2Note">خەمڵاندنی کیلۆگرام لە CO₂ کە ساڵانە لێی ڕزگار دەبێت.</div>
       </div>
     </div>
 
-    <div class="disclaimer">
-      This is an automated estimate based on the inputs you provided and typical Iraq conditions (8 peak sun-hours averaged across the year, average appliance behavior). The final system specification and price will be confirmed by a Blue Ray Energy engineer after a site visit.
+    <div class="disclaimer" data-i18n="disclaimer">
+      ئەمە خەمڵاندنێکی ئۆتۆماتیکییە بەپێی ئەو زانیاریانەی کە تۆ دایت و بارودۆخی ئاسایی عێراق (٨ کاتژمێری لووتکەی خۆر بە تێکڕای ساڵ، ڕەفتاری ئاسایی ئامرازەکان). تایبەتمەندی کۆتایی سیستەم و نرخ دوای سەردانی شوێن لەلایەن ئەندازیاری Blue Ray Energy جێگیر دەکرێت.
     </div>
   </section>
 
   <!-- STEP 5: CONTACT -->
   <section data-show-step="5">
-    <h2 class="step-title">Talk to a Blue Ray engineer</h2>
-    <p class="step-subtitle">Call us for the fastest response, or send your details and we'll get back to you.</p>
+    <h2 class="step-title" data-i18n="step5Title">پەیوەندی لەگەڵ ئەندازیاری Blue Ray بکە</h2>
+    <p class="step-subtitle" data-i18n="step5Subtitle">پەیوەندیمان پێوە بکە بۆ خێراترین وەڵام، یان زانیاریەکانت بنێرە و ئێمە دواتر پەیوەندیت پێوە دەکەین.</p>
 
     <div class="contact-hero">
-      <h2>Call us now for a free site visit</h2>
-      <p>Quote your estimated daily energy when you call so we can prepare.</p>
+      <h2 data-i18n="contactHeroTitle">ئێستا پەیوەندیمان پێوە بکە بۆ سەردانی شوێن بەخۆڕایی</h2>
+      <p data-i18n="contactHeroNote">کاتی پەیوەندیکردن وزەی خەمڵێنراوی ڕۆژانەکەت پێشکەش بکە تا ئامادە بین.</p>
       <a class="phone-cta" id="phoneCTA" href="tel:">
         <svg class="phone-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.9.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.9.1.4 0 .8-.3 1.1l-2.2 2.2z"/></svg>
         <span id="phoneCTAText">+964 XXX XXX XXXX</span>
       </a>
     </div>
 
-    <div class="or-divider">or send us your details</div>
+    <div class="or-divider" data-i18n="orDivider">یان زانیاریەکانتمان بۆ بنێرە</div>
 
     <form class="contact-form" id="contactForm" onsubmit="submitContact(event)">
       <div class="form-row">
         <div class="form-field">
-          <label for="cName">Full name</label>
+          <label for="cName" data-i18n="formNameLbl">ناوی تەواو</label>
           <input type="text" id="cName" required>
         </div>
         <div class="form-field">
-          <label for="cPhone">Phone number</label>
-          <input type="tel" id="cPhone" required placeholder="07XX XXX XXXX">
+          <label for="cPhone" data-i18n="formPhoneLbl">ژمارەی مۆبایل</label>
+          <input type="tel" id="cPhone" required placeholder="07XX XXX XXXX" data-i18n-placeholder="formPhonePlaceholder">
         </div>
       </div>
       <div class="form-row">
         <div class="form-field">
-          <label for="cEmail">Email (optional)</label>
+          <label for="cEmail" data-i18n="formEmailLbl">ئیمەیڵ (هەڵبژاردەیی)</label>
           <input type="email" id="cEmail">
         </div>
         <div class="form-field">
-          <label for="cCity">City / Area</label>
-          <input type="text" id="cCity" placeholder="e.g. Erbil, Baghdad">
+          <label for="cCity" data-i18n="formCityLbl">شار / ناوچە</label>
+          <input type="text" id="cCity" placeholder="بۆ نموونە: هەولێر، سلێمانی" data-i18n-placeholder="formCityPlaceholder">
         </div>
       </div>
-      <button type="submit" class="btn btn-block">Send my details to Blue Ray</button>
+      <button type="submit" class="btn btn-block" data-i18n="formSubmit">ناردنی زانیاریەکانم بۆ Blue Ray</button>
     </form>
   </section>
 
@@ -868,9 +937,9 @@
 <!-- Sticky nav bar -->
 <nav class="nav-bar" id="navBar">
   <div class="nav-bar-inner">
-    <button class="btn btn-secondary" id="backBtn" onclick="goBack()">Back</button>
+    <button class="btn btn-secondary" id="backBtn" onclick="goBack()" data-i18n="navBack">گەڕانەوە</button>
     <div class="running-total" id="runningTotal"></div>
-    <button class="btn" id="nextBtn" onclick="goNext()">Next</button>
+    <button class="btn" id="nextBtn" onclick="goNext()" data-i18n="navNext">دواتر</button>
   </div>
 </nav>
 
@@ -918,116 +987,375 @@ const LOGO_DATA_URI = "data:image/webp;base64,UklGRkI/AABXRUJQVlA4WAoAAAAwAAAA+Q
    ============================================================ */
 const APPLIANCES = [
   // Cooling
-  { id: "split_ac", name: "Split AC", category: "Cooling", defaultHours: 6, dayNight: "both",
+  { id: "split_ac", names: { en: "Split AC", ckb: "ئەیرکۆندیشنی سپلیت" }, category: "Cooling", defaultHours: 6, dayNight: "both",
     tiers: [
-      { label: "Small — 12,000 BTU (1 ton)", watts: 1100 },
-      { label: "Medium — 18,000 BTU (1.5 ton)", watts: 1600 },
-      { label: "Large — 24,000 BTU (2 ton)", watts: 2200 },
-      { label: "Extra large — 30,000 BTU (2.5 ton)", watts: 2700 }
+      { labels: { en: "Small — 12,000 BTU (1 ton)",        ckb: "بچووک — 12,000 BTU (1 تەن)" },        watts: 1100 },
+      { labels: { en: "Medium — 18,000 BTU (1.5 ton)",     ckb: "ناوەند — 18,000 BTU (1.5 تەن)" },     watts: 1600 },
+      { labels: { en: "Large — 24,000 BTU (2 ton)",        ckb: "گەورە — 24,000 BTU (2 تەن)" },        watts: 2200 },
+      { labels: { en: "Extra large — 30,000 BTU (2.5 ton)", ckb: "زۆر گەورە — 30,000 BTU (2.5 تەن)" }, watts: 2700 }
     ]},
-  { id: "window_ac", name: "Window AC", category: "Cooling", defaultHours: 5, dayNight: "both",
+  { id: "window_ac", names: { en: "Window AC", ckb: "ئەیرکۆندیشنی پەنجەرە" }, category: "Cooling", defaultHours: 5, dayNight: "both",
     tiers: [
-      { label: "Small — 9,000 BTU", watts: 900 },
-      { label: "Medium — 12,000 BTU", watts: 1200 },
-      { label: "Large — 18,000 BTU", watts: 1800 }
+      { labels: { en: "Small — 9,000 BTU",   ckb: "بچووک — 9,000 BTU" },   watts: 900 },
+      { labels: { en: "Medium — 12,000 BTU", ckb: "ناوەند — 12,000 BTU" }, watts: 1200 },
+      { labels: { en: "Large — 18,000 BTU",  ckb: "گەورە — 18,000 BTU" },  watts: 1800 }
     ]},
-  { id: "ceiling_fan", name: "Ceiling fan", category: "Cooling", defaultHours: 8, dayNight: "both",
-    tiers: [ { label: "Standard ceiling fan", watts: 75 } ]},
-  { id: "stand_fan", name: "Stand / table fan", category: "Cooling", defaultHours: 6, dayNight: "both",
-    tiers: [ { label: "Standard stand fan", watts: 60 } ]},
+  { id: "ceiling_fan", names: { en: "Ceiling fan", ckb: "پانکەی سەقف" }, category: "Cooling", defaultHours: 8, dayNight: "both",
+    tiers: [ { labels: { en: "Standard ceiling fan", ckb: "پانکەی سەقفی ئاسایی" }, watts: 75 } ]},
+  { id: "stand_fan", names: { en: "Stand / table fan", ckb: "پانکەی زەوی / مێز" }, category: "Cooling", defaultHours: 6, dayNight: "both",
+    tiers: [ { labels: { en: "Standard stand fan", ckb: "پانکەی ئاسایی" }, watts: 60 } ]},
 
   // Refrigeration
-  { id: "fridge", name: "Refrigerator", category: "Refrigeration", defaultHours: 24, dayNight: "24h",
+  { id: "fridge", names: { en: "Refrigerator", ckb: "ساردکەرەوە" }, category: "Refrigeration", defaultHours: 24, dayNight: "24h",
     tiers: [
-      { label: "Small (under 250 L)", watts: 50 },
-      { label: "Medium (250–400 L)", watts: 70 },
-      { label: "Large (over 400 L)", watts: 100 }
+      { labels: { en: "Small (under 250 L)",  ckb: "بچووک (کەمتر لە 250 لیتر)" }, watts: 50 },
+      { labels: { en: "Medium (250–400 L)",   ckb: "ناوەند (250–400 لیتر)" },     watts: 70 },
+      { labels: { en: "Large (over 400 L)",   ckb: "گەورە (زیاتر لە 400 لیتر)" }, watts: 100 }
     ]},
-  { id: "freezer", name: "Freezer", category: "Refrigeration", defaultHours: 24, dayNight: "24h",
+  { id: "freezer", names: { en: "Freezer", ckb: "فریزەر" }, category: "Refrigeration", defaultHours: 24, dayNight: "24h",
     tiers: [
-      { label: "Chest freezer", watts: 60 },
-      { label: "Upright freezer", watts: 80 }
+      { labels: { en: "Chest freezer",   ckb: "فریزەری ئاسۆیی" },  watts: 60 },
+      { labels: { en: "Upright freezer", ckb: "فریزەری ستوونی" }, watts: 80 }
     ]},
 
   // Lighting
-  { id: "led_bulb", name: "LED bulbs", category: "Lighting", defaultHours: 5, dayNight: "night",
-    tiers: [ { label: "Standard LED bulb (10 W each)", watts: 10 } ]},
-  { id: "ceiling_light", name: "Ceiling light panel", category: "Lighting", defaultHours: 5, dayNight: "night",
+  { id: "led_bulb", names: { en: "LED bulbs", ckb: "گڵۆپی LED" }, category: "Lighting", defaultHours: 5, dayNight: "night",
+    tiers: [ { labels: { en: "Standard LED bulb (10 W each)", ckb: "گڵۆپی LED ئاسایی (10 W یەکێک)" }, watts: 10 } ]},
+  { id: "ceiling_light", names: { en: "Ceiling light panel", ckb: "پانێڵی ڕووناکی سەقف" }, category: "Lighting", defaultHours: 5, dayNight: "night",
     tiers: [
-      { label: "Small panel (15 W)", watts: 15 },
-      { label: "Medium panel (30 W)", watts: 30 },
-      { label: "Large panel (60 W)", watts: 60 }
+      { labels: { en: "Small panel (15 W)",  ckb: "پانێڵی بچووک (15 W)" },  watts: 15 },
+      { labels: { en: "Medium panel (30 W)", ckb: "پانێڵی ناوەند (30 W)" }, watts: 30 },
+      { labels: { en: "Large panel (60 W)",  ckb: "پانێڵی گەورە (60 W)" },  watts: 60 }
     ]},
 
   // Electronics
-  { id: "tv", name: "Television", category: "Electronics", defaultHours: 4, dayNight: "night",
+  { id: "tv", names: { en: "Television", ckb: "تەلەفزیۆن" }, category: "Electronics", defaultHours: 4, dayNight: "night",
     tiers: [
-      { label: "Small — 32\"", watts: 50 },
-      { label: "Medium — 43\"", watts: 80 },
-      { label: "Large — 55\"", watts: 120 },
-      { label: "Extra large — 65\"+", watts: 160 }
+      { labels: { en: "Small — 32\"",       ckb: "بچووک — 32 ئنچ" },      watts: 50 },
+      { labels: { en: "Medium — 43\"",      ckb: "ناوەند — 43 ئنچ" },     watts: 80 },
+      { labels: { en: "Large — 55\"",       ckb: "گەورە — 55 ئنچ" },      watts: 120 },
+      { labels: { en: "Extra large — 65\"+", ckb: "زۆر گەورە — 65+ ئنچ" }, watts: 160 }
     ]},
-  { id: "laptop", name: "Laptop", category: "Electronics", defaultHours: 4, dayNight: "both",
-    tiers: [ { label: "Standard laptop", watts: 60 } ]},
-  { id: "desktop", name: "Desktop PC", category: "Electronics", defaultHours: 4, dayNight: "both",
+  { id: "laptop", names: { en: "Laptop", ckb: "لاپتۆپ" }, category: "Electronics", defaultHours: 4, dayNight: "both",
+    tiers: [ { labels: { en: "Standard laptop", ckb: "لاپتۆپی ئاسایی" }, watts: 60 } ]},
+  { id: "desktop", names: { en: "Desktop PC", ckb: "کۆمپیوتەری دیسکتۆپ" }, category: "Electronics", defaultHours: 4, dayNight: "both",
     tiers: [
-      { label: "Office desktop", watts: 200 },
-      { label: "Gaming desktop", watts: 400 }
+      { labels: { en: "Office desktop", ckb: "کۆمپیوتەری ئۆفیس" }, watts: 200 },
+      { labels: { en: "Gaming desktop", ckb: "کۆمپیوتەری یاری" },  watts: 400 }
     ]},
-  { id: "router", name: "Wi-Fi router", category: "Electronics", defaultHours: 24, dayNight: "24h",
-    tiers: [ { label: "Standard router", watts: 10 } ]},
-  { id: "satellite", name: "Satellite receiver", category: "Electronics", defaultHours: 4, dayNight: "night",
-    tiers: [ { label: "Standard receiver", watts: 25 } ]},
+  { id: "router", names: { en: "Wi-Fi router", ckb: "ڕاوتەری وای-فای" }, category: "Electronics", defaultHours: 24, dayNight: "24h",
+    tiers: [ { labels: { en: "Standard router", ckb: "ڕاوتەری ئاسایی" }, watts: 10 } ]},
+  { id: "satellite", names: { en: "Satellite receiver", ckb: "ڕیسیڤەری بۆڕی" }, category: "Electronics", defaultHours: 4, dayNight: "night",
+    tiers: [ { labels: { en: "Standard receiver", ckb: "ڕیسیڤەری ئاسایی" }, watts: 25 } ]},
 
   // Kitchen
-  { id: "microwave", name: "Microwave", category: "Kitchen", defaultHours: 0.3, dayNight: "day",
-    tiers: [ { label: "Standard microwave", watts: 1000 } ]},
-  { id: "oven", name: "Electric oven", category: "Kitchen", defaultHours: 0.5, dayNight: "day",
+  { id: "microwave", names: { en: "Microwave", ckb: "مایکرۆوەیڤ" }, category: "Kitchen", defaultHours: 0.3, dayNight: "day",
+    tiers: [ { labels: { en: "Standard microwave", ckb: "مایکرۆوەیڤی ئاسایی" }, watts: 1000 } ]},
+  { id: "oven", names: { en: "Electric oven", ckb: "فڕنی کارەبایی" }, category: "Kitchen", defaultHours: 0.5, dayNight: "day",
     tiers: [
-      { label: "Small countertop", watts: 1200 },
-      { label: "Full-size electric oven", watts: 2000 }
+      { labels: { en: "Small countertop",        ckb: "فڕنی بچووکی سەرمێز" }, watts: 1200 },
+      { labels: { en: "Full-size electric oven", ckb: "فڕنی کارەبایی تەواو" }, watts: 2000 }
     ]},
-  { id: "kettle", name: "Electric kettle", category: "Kitchen", defaultHours: 0.2, dayNight: "day",
-    tiers: [ { label: "Standard kettle", watts: 1500 } ]},
-  { id: "coffee", name: "Coffee maker", category: "Kitchen", defaultHours: 0.2, dayNight: "day",
-    tiers: [ { label: "Standard coffee maker", watts: 800 } ]},
-  { id: "toaster", name: "Toaster", category: "Kitchen", defaultHours: 0.1, dayNight: "day",
-    tiers: [ { label: "Standard toaster", watts: 900 } ]},
-  { id: "dishwasher", name: "Dishwasher", category: "Kitchen", defaultHours: 1, dayNight: "day",
-    tiers: [ { label: "Standard dishwasher", watts: 1500 } ]},
+  { id: "kettle", names: { en: "Electric kettle", ckb: "گەرمکەرەوەی ئاو" }, category: "Kitchen", defaultHours: 0.2, dayNight: "day",
+    tiers: [ { labels: { en: "Standard kettle", ckb: "گەرمکەرەوەی ئاسایی" }, watts: 1500 } ]},
+  { id: "coffee", names: { en: "Coffee maker", ckb: "قاوەلێنەرەوە" }, category: "Kitchen", defaultHours: 0.2, dayNight: "day",
+    tiers: [ { labels: { en: "Standard coffee maker", ckb: "قاوەلێنەرەوەی ئاسایی" }, watts: 800 } ]},
+  { id: "toaster", names: { en: "Toaster", ckb: "تۆستەر" }, category: "Kitchen", defaultHours: 0.1, dayNight: "day",
+    tiers: [ { labels: { en: "Standard toaster", ckb: "تۆستەری ئاسایی" }, watts: 900 } ]},
+  { id: "dishwasher", names: { en: "Dishwasher", ckb: "قاپشۆر" }, category: "Kitchen", defaultHours: 1, dayNight: "day",
+    tiers: [ { labels: { en: "Standard dishwasher", ckb: "قاپشۆری ئاسایی" }, watts: 1500 } ]},
 
   // Laundry
-  { id: "washer", name: "Washing machine", category: "Laundry", defaultHours: 1, dayNight: "day",
+  { id: "washer", names: { en: "Washing machine", ckb: "جلشۆر" }, category: "Laundry", defaultHours: 1, dayNight: "day",
     tiers: [
-      { label: "Standard (cold wash)", watts: 500 },
-      { label: "With heater (hot wash)", watts: 1500 }
+      { labels: { en: "Standard (cold wash)",     ckb: "ئاسایی (شوشتنی سارد)" },          watts: 500 },
+      { labels: { en: "With heater (hot wash)",   ckb: "بە گەرمکەرەوە (شوشتنی گەرم)" },  watts: 1500 }
     ]},
-  { id: "dryer", name: "Clothes dryer", category: "Laundry", defaultHours: 0.5, dayNight: "day",
-    tiers: [ { label: "Electric dryer", watts: 2500 } ]},
-  { id: "iron", name: "Clothes iron", category: "Laundry", defaultHours: 0.3, dayNight: "day",
-    tiers: [ { label: "Standard iron", watts: 1200 } ]},
+  { id: "dryer", names: { en: "Clothes dryer", ckb: "وشککەرەوەی جل" }, category: "Laundry", defaultHours: 0.5, dayNight: "day",
+    tiers: [ { labels: { en: "Electric dryer", ckb: "وشککەرەوەی کارەبایی" }, watts: 2500 } ]},
+  { id: "iron", names: { en: "Clothes iron", ckb: "ئوتو" }, category: "Laundry", defaultHours: 0.3, dayNight: "day",
+    tiers: [ { labels: { en: "Standard iron", ckb: "ئوتوی ئاسایی" }, watts: 1200 } ]},
 
   // Water
-  { id: "water_heater", name: "Electric water heater", category: "Water", defaultHours: 2, dayNight: "both",
+  { id: "water_heater", names: { en: "Electric water heater", ckb: "ئاوگەرمکەرەوەی کارەبایی" }, category: "Water", defaultHours: 2, dayNight: "both",
     tiers: [
-      { label: "Tank heater (storage)", watts: 2000 },
-      { label: "Instant / tankless", watts: 5000 }
+      { labels: { en: "Tank heater (storage)", ckb: "گەرمکەرەوەی تانک (هەڵگرتنەوە)" }, watts: 2000 },
+      { labels: { en: "Instant / tankless",    ckb: "خێرا / بێ تانک" },                watts: 5000 }
     ]},
-  { id: "water_pump", name: "Water pump", category: "Water", defaultHours: 1, dayNight: "day",
+  { id: "water_pump", names: { en: "Water pump", ckb: "پۆمپی ئاو" }, category: "Water", defaultHours: 1, dayNight: "day",
     tiers: [
-      { label: "Small (½ HP)", watts: 370 },
-      { label: "Standard (1 HP)", watts: 750 },
-      { label: "Large (1.5 HP)", watts: 1100 }
+      { labels: { en: "Small (½ HP)",     ckb: "بچووک (½ HP)" },    watts: 370 },
+      { labels: { en: "Standard (1 HP)",  ckb: "ئاسایی (1 HP)" },   watts: 750 },
+      { labels: { en: "Large (1.5 HP)",   ckb: "گەورە (1.5 HP)" },  watts: 1100 }
     ]},
-  { id: "hair_dryer", name: "Hair dryer", category: "Water", defaultHours: 0.15, dayNight: "day",
-    tiers: [ { label: "Standard hair dryer", watts: 1500 } ]},
+  { id: "hair_dryer", names: { en: "Hair dryer", ckb: "وشککەرەوەی قژ" }, category: "Water", defaultHours: 0.15, dayNight: "day",
+    tiers: [ { labels: { en: "Standard hair dryer", ckb: "وشککەرەوەی قژی ئاسایی" }, watts: 1500 } ]},
 
   // Other
-  { id: "other", name: "Other appliance", category: "Other", defaultHours: 2, dayNight: "both",
-    tiers: [ { label: "Custom — enter watts manually", watts: 100 } ]}
+  { id: "other", names: { en: "Other appliance", ckb: "ئامرازی تر" }, category: "Other", defaultHours: 2, dayNight: "both",
+    tiers: [ { labels: { en: "Custom — enter watts manually", ckb: "تایبەت — واتە بە دەست بنووسە" }, watts: 100 } ]}
 ];
 
 const CATEGORIES = ["Cooling", "Refrigeration", "Lighting", "Electronics", "Kitchen", "Laundry", "Water", "Other"];
+
+const CATEGORY_LABELS = {
+  en:  { Cooling: "Cooling",       Refrigeration: "Refrigeration",       Lighting: "Lighting", Electronics: "Electronics", Kitchen: "Kitchen",     Laundry: "Laundry",            Water: "Water", Other: "Other" },
+  ckb: { Cooling: "ساردکردنەوە",  Refrigeration: "ساردکەرەوە و فریزەر", Lighting: "ڕووناکی",  Electronics: "ئەلیکترۆنیات", Kitchen: "چێشتخانە", Laundry: "جلشۆر و وشککەرەوە", Water: "ئاو",   Other: "هیتر" }
+};
+
+/* ============================================================
+   I18N — translations for static and dynamic UI strings.
+   Static strings: tagged with data-i18n / data-i18n-placeholder in
+   the HTML. Dynamic strings: looked up via t(key, vars) in JS.
+   Default language is ckb (Kurdish Sorani); en is the fallback.
+   ============================================================ */
+const T = {
+  en: {
+    brandSub: "Solar System Calculator",
+    welcomeTitle: "Find the right solar system for your home",
+    welcomeIntro: "Tell us what's in your home. We'll estimate your daily energy needs, recommend a system size, and show you the cost — in just a few minutes.",
+    welcomeBullet1: "Add your home's appliances. Easy presets or exact wattage — your choice.",
+    welcomeBullet2: "See your daily energy use, split into daytime and nighttime needs.",
+    welcomeBullet3: "Get a sized system with a transparent price and yearly savings estimate.",
+    welcomeCTA: "Start the calculator",
+    step2Title: "What's in your home?",
+    step2Subtitle: "Scroll through every category below and tap each appliance you have. Adjust quantity, size, and hours on the right.",
+    yourHome: "Your home",
+    emptyApplianceList: "No appliances added yet. Tap an appliance on the left to begin.",
+    step3Title: "Review your usage",
+    step3Subtitle: "Here's what we'll use to size your system. Go back to step 2 if you'd like to adjust.",
+    summaryDailyLbl: "Total kWh per day",
+    summaryDayLbl: "Daytime use (kWh)",
+    summaryNightLbl: "Nighttime use (kWh)",
+    step4Title: "Your recommended system",
+    step4Subtitle: "Built around your usage profile. Solar panels cover daytime energy; the battery covers your night usage.",
+    quoteLabel: "Estimated installed price",
+    sysPanelLbl: "Solar panels",
+    sysBatteryLbl: "Battery storage",
+    sysInverterLbl: "Inverter",
+    dayEnergyLbl: "Daytime energy",
+    dayEnergyNote: "Covered directly by your solar panels.",
+    nightEnergyLbl: "Nighttime energy",
+    nightEnergyNote: "Stored in the battery during the day, used at night.",
+    savMonthlyLbl: "Monthly electricity bill avoided",
+    savMonthlyDefaultNote: "What you'd otherwise pay the government grid each month.",
+    savYearlyLbl: "Yearly electricity bill avoided",
+    savYearlyDefaultNote: "Estimated yearly savings based on Iraq's tiered residential tariff.",
+    savPaybackLbl: "Payback period",
+    savPaybackNote: "Years until total savings cover the system cost.",
+    savCO2Lbl: "CO₂ reduction",
+    savCO2Note: "Estimated kilograms of CO₂ avoided per year.",
+    disclaimer: "This is an automated estimate based on the inputs you provided and typical Iraq conditions (8 peak sun-hours averaged across the year, average appliance behavior). The final system specification and price will be confirmed by a Blue Ray Energy engineer after a site visit.",
+    step5Title: "Talk to a Blue Ray engineer",
+    step5Subtitle: "Call us for the fastest response, or send your details and we'll get back to you.",
+    contactHeroTitle: "Call us now for a free site visit",
+    contactHeroNote: "Quote your estimated daily energy when you call so we can prepare.",
+    orDivider: "or send us your details",
+    formNameLbl: "Full name",
+    formPhoneLbl: "Phone number",
+    formPhonePlaceholder: "07XX XXX XXXX",
+    formEmailLbl: "Email (optional)",
+    formCityLbl: "City / Area",
+    formCityPlaceholder: "e.g. Erbil, Baghdad",
+    formSubmit: "Send my details to Blue Ray",
+    navBack: "Back",
+    navNext: "Next",
+    navGetQuote: "Get a quote",
+
+    // Dynamic strings
+    tapToAdd: "Tap to add",
+    addedAdjust: "Added — adjust on the right",
+    quantityLbl: "Quantity",
+    sizeLbl: "Size",
+    wattsEachLbl: "Watts (each)",
+    hoursPerDayLbl: "Hours per day",
+    usePresetSizes: "Use preset sizes instead",
+    iKnowExactWatts: "I know the exact watts",
+    removeBtn: "Remove",
+    perDayKWhSuffix: "kWh/day",        // "12.3 kWh/day"
+    perMonthKWhSuffix: "kWh/mo",       // "913 kWh/mo"
+    runningTotalLbl: "Total",          // "Total: 12.3 kWh/day"
+    reviewColAppliance: "Appliance",
+    reviewColQty: "Qty",
+    reviewColWatts: "Watts",
+    reviewColHoursDay: "Hours/day",
+    reviewColKWhDay: "kWh/day",
+    noAppliancesReview: "No appliances selected. Go back and add some.",
+    totalDailyEnergyLbl: "Total daily energy",
+    callUsForQuote: "Call us for an exact quote",
+    callPrefix: "Call",                // "Call +964..."
+    monthlyBillNote: "≈ {iqd}/mo at {kwh} kWh/mo.",
+    yearlyBillNote: "≈ {iqd}/yr on Iraq's tiered residential tariff.",
+    yearsUnit: "years",
+    kgPerYrUnit: "kg/yr",
+    perMoUnit: "/mo",
+    perYrUnit: "/yr",
+    addAtLeastOneAlert: "Please add at least one appliance before continuing.",
+
+    // Email body (sent via mailto)
+    mailSubject: "Solar quote request — ",
+    mailNewLead: "New solar calculator lead from website:",
+    mailName: "Name",
+    mailPhone: "Phone",
+    mailEmail: "Email",
+    mailCity: "City",
+    mailEstimatedSystem: "--- Estimated system ---",
+    mailDailyEnergy: "Daily energy",
+    mailDayNight: "Day / Night",
+    mailSolarPanels: "Solar panels",
+    mailBattery: "Battery",
+    mailInverter: "Inverter",
+    mailEstimatedPrice: "Estimated price",
+    mailMonthlyAvoided: "Monthly bill avoided",
+    mailPayback: "Payback period",
+    mailAppliances: "--- Appliances ---",
+
+    // Currency
+    currencyIQDSuffix: "IQD"
+  },
+  ckb: {
+    brandSub: "هەژمێرکاری سیستەمی خۆرەکی",
+    welcomeTitle: "سیستەمی خۆرەکی گونجاو بۆ ماڵەکەت بدۆزەرەوە",
+    welcomeIntro: "پێمان بڵێ چی لە ماڵەکەتدا هەیە. ئێمە پێداویستی ڕۆژانەی وزەت دەخەمڵێنین، قەبارەی سیستەم پێشنیار دەکەین و نرخی پیشان دەدەین — تەنها لە چەند خولەکێکدا.",
+    welcomeBullet1: "ئامرازەکانی ماڵەکەت زیاد بکە. هەڵبژاردنی ئامادە یان واتە دروست — هەڵبژاردن لای تۆیە.",
+    welcomeBullet2: "بەکارهێنانی وزەی ڕۆژانەت ببینە، دابەشکراو بەسەر پێداویستی ڕۆژ و شەو.",
+    welcomeBullet3: "سیستەمێکی پێوەرکراو وەربگرە لەگەڵ نرخێکی ڕوون و خەمڵاندنی پاشەکەوتی ساڵانە.",
+    welcomeCTA: "دەستپێکردنی هەژمێرکار",
+    step2Title: "چی لە ماڵەکەتدا هەیە؟",
+    step2Subtitle: "بەسەر هەموو پۆلەکاندا بشۆڕێوە و کرتە لەسەر هەر ئامرازێک بکە کە هەتە. ژمارە، قەبارە و کاتژمێر لە لای ڕاست ڕێک بخە.",
+    yourHome: "ماڵەکەت",
+    emptyApplianceList: "هیچ ئامرازێک زیاد نەکراوە. کرتە لەسەر ئامرازێکی لای چەپ بکە بۆ دەستپێکردن.",
+    step3Title: "پێداچوونەوەی بەکارهێنانەکەت",
+    step3Subtitle: "ئەمە ئەو زانیاریانەن کە بەکاریان دەهێنین بۆ پێوەرکردنی سیستەمەکەت. بگەڕێوە بۆ هەنگاوی ٢ ئەگەر دەتەوێت ڕێکی بخەیتەوە.",
+    summaryDailyLbl: "کۆی کیلۆوات/کاتژمێر بۆ ڕۆژێک",
+    summaryDayLbl: "بەکارهێنانی ڕۆژ (kWh)",
+    summaryNightLbl: "بەکارهێنانی شەو (kWh)",
+    step4Title: "سیستەمی پێشنیارکراو بۆ تۆ",
+    step4Subtitle: "دروستکراو لەسەر شێوازی بەکارهێنانت. پانێڵە خۆرەکییەکان وزەی ڕۆژ دابین دەکەن؛ پاتری بەکارهێنانی شەو دادەپۆشێت.",
+    quoteLabel: "نرخی خەمڵێنراوی دامەزراندن",
+    sysPanelLbl: "پانێڵە خۆرەکییەکان",
+    sysBatteryLbl: "خەزنکراوی پاتری",
+    sysInverterLbl: "ئینڤێرتەر",
+    dayEnergyLbl: "وزەی ڕۆژ",
+    dayEnergyNote: "ڕاستەوخۆ لەلایەن پانێڵە خۆرەکییەکانتەوە دابین دەکرێت.",
+    nightEnergyLbl: "وزەی شەو",
+    nightEnergyNote: "بە درێژایی ڕۆژ لە پاتریدا هەڵدەگیرێت، بە شەو بەکار دێت.",
+    savMonthlyLbl: "نرخی کارەبای مانگانە کە لێی ڕزگار دەبیت",
+    savMonthlyDefaultNote: "ئەو پارەیەی کە بێ سیستەمی خۆرەکی مانگانە بە حکومەت دەدەیت.",
+    savYearlyLbl: "نرخی کارەبای ساڵانە کە لێی ڕزگار دەبیت",
+    savYearlyDefaultNote: "خەمڵاندنی پاشەکەوتی ساڵانە بەپێی نرخی پلەبەندیکراوی کارەبا لە عێراق.",
+    savPaybackLbl: "ماوەی گەڕانەوەی نرخ",
+    savPaybackNote: "ساڵی پێویست تا کۆی پاشەکەوت نرخی سیستەمەکە بدۆزێتەوە.",
+    savCO2Lbl: "کەمکردنەوەی CO₂",
+    savCO2Note: "خەمڵاندنی کیلۆگرام لە CO₂ کە ساڵانە لێی ڕزگار دەبێت.",
+    disclaimer: "ئەمە خەمڵاندنێکی ئۆتۆماتیکییە بەپێی ئەو زانیاریانەی کە تۆ دایت و بارودۆخی ئاسایی عێراق (٨ کاتژمێری لووتکەی خۆر بە تێکڕای ساڵ، ڕەفتاری ئاسایی ئامرازەکان). تایبەتمەندی کۆتایی سیستەم و نرخ دوای سەردانی شوێن لەلایەن ئەندازیاری Blue Ray Energy جێگیر دەکرێت.",
+    step5Title: "پەیوەندی لەگەڵ ئەندازیاری Blue Ray بکە",
+    step5Subtitle: "پەیوەندیمان پێوە بکە بۆ خێراترین وەڵام، یان زانیاریەکانت بنێرە و ئێمە دواتر پەیوەندیت پێوە دەکەین.",
+    contactHeroTitle: "ئێستا پەیوەندیمان پێوە بکە بۆ سەردانی شوێن بەخۆڕایی",
+    contactHeroNote: "کاتی پەیوەندیکردن وزەی خەمڵێنراوی ڕۆژانەکەت پێشکەش بکە تا ئامادە بین.",
+    orDivider: "یان زانیاریەکانتمان بۆ بنێرە",
+    formNameLbl: "ناوی تەواو",
+    formPhoneLbl: "ژمارەی مۆبایل",
+    formPhonePlaceholder: "07XX XXX XXXX",
+    formEmailLbl: "ئیمەیڵ (هەڵبژاردەیی)",
+    formCityLbl: "شار / ناوچە",
+    formCityPlaceholder: "بۆ نموونە: هەولێر، سلێمانی",
+    formSubmit: "ناردنی زانیاریەکانم بۆ Blue Ray",
+    navBack: "گەڕانەوە",
+    navNext: "دواتر",
+    navGetQuote: "وەرگرتنی نرخ",
+
+    tapToAdd: "کرتە بکە بۆ زیادکردن",
+    addedAdjust: "زیادکرا — ڕێکی بخە لای ڕاست",
+    quantityLbl: "ژمارە",
+    sizeLbl: "قەبارە",
+    wattsEachLbl: "واتە (هەر یەکێک)",
+    hoursPerDayLbl: "کاتژمێر بۆ ڕۆژێک",
+    usePresetSizes: "بەکارهێنانی قەبارە ئامادەکراوەکان",
+    iKnowExactWatts: "واتە دروستەکە دەزانم",
+    removeBtn: "سڕینەوە",
+    perDayKWhSuffix: "kWh/ڕۆژ",
+    perMonthKWhSuffix: "kWh/مانگ",
+    runningTotalLbl: "کۆ",
+    reviewColAppliance: "ئامراز",
+    reviewColQty: "ژمارە",
+    reviewColWatts: "واتە",
+    reviewColHoursDay: "کاتژمێر/ڕۆژ",
+    reviewColKWhDay: "kWh/ڕۆژ",
+    noAppliancesReview: "هیچ ئامرازێک هەڵنەبژێردراوە. بگەڕێوە و هەندێک زیاد بکە.",
+    totalDailyEnergyLbl: "کۆی وزەی ڕۆژانە",
+    callUsForQuote: "پەیوەندیمان پێوە بکە بۆ نرخێکی دروست",
+    callPrefix: "پەیوەندی",
+    monthlyBillNote: "≈ {iqd}/مانگ بە {kwh} kWh/مانگ.",
+    yearlyBillNote: "≈ {iqd}/ساڵ بەپێی نرخی پلەبەندیکراوی کارەبا لە عێراق.",
+    yearsUnit: "ساڵ",
+    kgPerYrUnit: "کگ/ساڵ",
+    perMoUnit: "/مانگ",
+    perYrUnit: "/ساڵ",
+    addAtLeastOneAlert: "تکایە بەلایەنی کەم یەک ئامراز زیاد بکە پێش بەردەوامبوون.",
+
+    mailSubject: "داواکاری نرخی سیستەمی خۆرەکی — ",
+    mailNewLead: "ڕێبەرێکی نوێی هەژمێرکاری خۆرەکی لە ماڵپەڕ:",
+    mailName: "ناو",
+    mailPhone: "مۆبایل",
+    mailEmail: "ئیمەیڵ",
+    mailCity: "شار",
+    mailEstimatedSystem: "--- سیستەمی خەمڵێنراو ---",
+    mailDailyEnergy: "وزەی ڕۆژانە",
+    mailDayNight: "ڕۆژ / شەو",
+    mailSolarPanels: "پانێڵە خۆرەکییەکان",
+    mailBattery: "پاتری",
+    mailInverter: "ئینڤێرتەر",
+    mailEstimatedPrice: "نرخی خەمڵێنراو",
+    mailMonthlyAvoided: "نرخی مانگانە کە لێی ڕزگار دەبیت",
+    mailPayback: "ماوەی گەڕانەوەی نرخ",
+    mailAppliances: "--- ئامرازەکان ---",
+
+    currencyIQDSuffix: "دینار"
+  }
+};
+
+function t(key, vars) {
+  let s = (T[state.lang] && T[state.lang][key]) || T.en[key] || key;
+  if (vars) {
+    Object.keys(vars).forEach(k => { s = s.split("{" + k + "}").join(vars[k]); });
+  }
+  return s;
+}
+
+function applianceName(app) {
+  return (app.names && (app.names[state.lang] || app.names.en)) || app.id;
+}
+function tierLabel(tier) {
+  return (tier.labels && (tier.labels[state.lang] || tier.labels.en)) || "";
+}
+function categoryLabel(cat) {
+  return (CATEGORY_LABELS[state.lang] && CATEGORY_LABELS[state.lang][cat]) || cat;
+}
+
+function applyTranslations() {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = t(el.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
+  });
+}
+
+function setLanguage(lang) {
+  if (!T[lang]) return;
+  state.lang = lang;
+  try { localStorage.setItem("blueRayLang", lang); } catch (e) {}
+  document.documentElement.setAttribute("lang", lang);
+  document.documentElement.setAttribute("dir", lang === "ckb" ? "rtl" : "ltr");
+  document.title = t("brandSub") + " | Blue Ray Energy";
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+  });
+  applyTranslations();
+  // Re-render whatever step is currently visible so dynamic JS strings update.
+  goToStep(state.currentStep);
+}
 
 /* ============================================================
    STATE
@@ -1035,6 +1363,7 @@ const CATEGORIES = ["Cooling", "Refrigeration", "Lighting", "Electronics", "Kitc
 const state = {
   currentStep: 1,
   activeCategory: "Cooling",
+  lang: "ckb",
   // selected[applianceId] = { qty, tierIndex, customWatts, hoursOverride, manualMode }
   selected: {},
   lastResult: null
@@ -1124,7 +1453,7 @@ function tieredMonthlyBillIQD(monthlyKWh) {
    ============================================================ */
 function fmtIQD(n) {
   if (!isFinite(n)) return "—";
-  return Math.round(n).toLocaleString("en-US") + " IQD";
+  return Math.round(n).toLocaleString("en-US") + " " + t("currencyIQDSuffix");
 }
 function fmtUSD(n) {
   if (!isFinite(n)) return "—";
@@ -1150,7 +1479,7 @@ function renderCategoryTabs() {
   CATEGORIES.forEach(cat => {
     const btn = document.createElement("button");
     btn.className = "category-tab";
-    btn.textContent = cat;
+    btn.textContent = categoryLabel(cat);
     btn.onclick = () => {
       const target = document.getElementById("cat-" + cat);
       if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1169,7 +1498,7 @@ function renderApplianceGrid() {
 
     const heading = document.createElement("h3");
     heading.className = "category-heading";
-    heading.textContent = cat;
+    heading.textContent = categoryLabel(cat);
     section.appendChild(heading);
 
     const grid = document.createElement("div");
@@ -1179,8 +1508,8 @@ function renderApplianceGrid() {
       const isSelected = !!state.selected[app.id];
       card.className = "appliance-card" + (isSelected ? " selected" : "");
       card.innerHTML = `
-        <div class="appliance-card-name">${app.name}</div>
-        <div class="appliance-card-cat">${isSelected ? "Added — adjust on the right" : "Tap to add"}</div>
+        <div class="appliance-card-name">${applianceName(app)}</div>
+        <div class="appliance-card-cat">${isSelected ? t("addedAdjust") : t("tapToAdd")}</div>
       `;
       card.onclick = () => toggleAppliance(app.id);
       grid.appendChild(card);
@@ -1220,8 +1549,8 @@ function renderSelectedList() {
   const wrap = document.getElementById("selectedList");
   const ids = Object.keys(state.selected);
   if (ids.length === 0) {
-    wrap.innerHTML = `<div class="selected-empty">No appliances added yet. Tap an appliance on the left to begin.</div>`;
-    document.getElementById("selectedTotal").textContent = "0 kWh/day";
+    wrap.innerHTML = `<div class="selected-empty">${t("emptyApplianceList")}</div>`;
+    document.getElementById("selectedTotal").textContent = "0 " + t("perDayKWhSuffix");
     return;
   }
   wrap.innerHTML = "";
@@ -1235,18 +1564,18 @@ function renderSelectedList() {
     const item = document.createElement("div");
     item.className = "selected-item";
 
-    const tierOptions = app.tiers.map((t, i) =>
-      `<option value="${i}" ${sel.tierIndex === i ? "selected" : ""}>${t.label}</option>`
+    const tierOptions = app.tiers.map((tier, i) =>
+      `<option value="${i}" ${sel.tierIndex === i ? "selected" : ""}>${tierLabel(tier)}</option>`
     ).join("");
 
     item.innerHTML = `
       <div class="selected-item-top">
-        <div class="selected-item-name">${app.name}</div>
-        <button class="remove-btn" title="Remove" onclick="removeAppliance('${id}')">×</button>
+        <div class="selected-item-name">${applianceName(app)}</div>
+        <button class="remove-btn" title="${t("removeBtn")}" onclick="removeAppliance('${id}')">×</button>
       </div>
 
       <div class="control-row">
-        <label>Quantity</label>
+        <label>${t("quantityLbl")}</label>
         <div class="qty-control">
           <button class="qty-btn" onclick="changeQty('${id}', -1)">−</button>
           <span class="qty-val">${sel.qty}</span>
@@ -1255,27 +1584,27 @@ function renderSelectedList() {
       </div>
 
       <div class="control-row">
-        <label>${sel.manualMode ? "Watts (each)" : "Size"}</label>
+        <label>${sel.manualMode ? t("wattsEachLbl") : t("sizeLbl")}</label>
         ${sel.manualMode
           ? `<input type="number" min="1" value="${sel.customWatts || watts}" oninput="setCustomWatts('${id}', this.value)">`
           : `<select onchange="setTier('${id}', this.value)">${tierOptions}</select>`}
       </div>
 
       <div class="control-row">
-        <label>Hours per day</label>
+        <label>${t("hoursPerDayLbl")}</label>
         <input type="number" min="0" max="24" step="0.1" value="${hours}" oninput="setHours('${id}', this.value)">
       </div>
 
       <div class="control-row" style="margin-top:8px;">
         <button class="advanced-toggle" onclick="toggleManual('${id}')">
-          ${sel.manualMode ? "Use preset sizes instead" : "I know the exact watts"}
+          ${sel.manualMode ? t("usePresetSizes") : t("iKnowExactWatts")}
         </button>
-        <div class="selected-item-kwh"><b>${kwh.toFixed(2)} kWh</b>/day</div>
+        <div class="selected-item-kwh"><b>${kwh.toFixed(2)} ${t("perDayKWhSuffix")}</b></div>
       </div>
     `;
     wrap.appendChild(item);
   });
-  document.getElementById("selectedTotal").textContent = totalDaily().toFixed(1) + " kWh/day";
+  document.getElementById("selectedTotal").textContent = totalDaily().toFixed(1) + " " + t("perDayKWhSuffix");
 }
 
 function changeQty(id, delta) {
@@ -1319,18 +1648,18 @@ function renderReview() {
 
   let rows = `
     <thead><tr>
-      <th>Appliance</th><th>Qty</th><th>Watts</th><th>Hours/day</th><th>kWh/day</th>
+      <th>${t("reviewColAppliance")}</th><th>${t("reviewColQty")}</th><th>${t("reviewColWatts")}</th><th>${t("reviewColHoursDay")}</th><th>${t("reviewColKWhDay")}</th>
     </tr></thead><tbody>
   `;
 
   if (ids.length === 0) {
-    rows += `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px;">No appliances selected. Go back and add some.</td></tr>`;
+    rows += `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px;">${t("noAppliancesReview")}</td></tr>`;
   } else {
     ids.forEach(id => {
       const app = APPLIANCES.find(a => a.id === id);
       const sel = state.selected[id];
       rows += `<tr>
-        <td><b>${app.name}</b></td>
+        <td><b>${applianceName(app)}</b></td>
         <td>${sel.qty}</td>
         <td>${applianceWatts(id, sel)} W</td>
         <td>${applianceHours(id, sel)}</td>
@@ -1341,7 +1670,7 @@ function renderReview() {
 
   const c = calculate();
   rows += `</tbody><tfoot><tr>
-    <td colspan="4">Total daily energy</td>
+    <td colspan="4">${t("totalDailyEnergyLbl")}</td>
     <td>${c.totalDaily.toFixed(2)} kWh</td>
   </tr></tfoot>`;
 
@@ -1370,19 +1699,19 @@ function renderResults() {
 
   const monthlyBillUSD = c.monthlyBillIQD / CONFIG.exchangeRate_IQD_per_USD;
   const annualBillUSD = c.annualBillIQD / CONFIG.exchangeRate_IQD_per_USD;
-  document.getElementById("savMonthly").textContent = fmtUSD(monthlyBillUSD) + "/mo";
+  document.getElementById("savMonthly").textContent = fmtUSD(monthlyBillUSD) + t("perMoUnit");
   document.getElementById("savMonthlyNote").textContent =
-    "≈ " + fmtIQD(c.monthlyBillIQD) + "/mo at " + Math.round(c.monthlyKWh) + " kWh/mo.";
-  document.getElementById("savYearly").textContent = fmtUSD(annualBillUSD) + "/yr";
+    t("monthlyBillNote", { iqd: fmtIQD(c.monthlyBillIQD), kwh: Math.round(c.monthlyKWh) });
+  document.getElementById("savYearly").textContent = fmtUSD(annualBillUSD) + t("perYrUnit");
   document.getElementById("savYearlyNote").textContent =
-    "≈ " + fmtIQD(c.annualBillIQD) + "/yr on Iraq's tiered residential tariff.";
+    t("yearlyBillNote", { iqd: fmtIQD(c.annualBillIQD) });
   document.getElementById("savPayback").textContent = isFinite(c.paybackYears)
-    ? c.paybackYears.toFixed(1) + " years" : "—";
-  document.getElementById("savCO2").textContent = Math.round(c.co2Saved).toLocaleString() + " kg/yr";
+    ? c.paybackYears.toFixed(1) + " " + t("yearsUnit") : "—";
+  document.getElementById("savCO2").textContent = Math.round(c.co2Saved).toLocaleString() + " " + t("kgPerYrUnit");
 
   const phoneHref = "tel:" + CONFIG.companyPhone.replace(/\s+/g, "");
   document.getElementById("phoneCTAResults").setAttribute("href", phoneHref);
-  document.getElementById("phoneCTAResultsText").textContent = "Call " + CONFIG.companyPhone;
+  document.getElementById("phoneCTAResultsText").textContent = t("callPrefix") + " " + CONFIG.companyPhone;
 }
 
 /* ============================================================
@@ -1402,32 +1731,33 @@ function submitContact(e) {
   const email = document.getElementById("cEmail").value.trim();
   const city = document.getElementById("cCity").value.trim();
   const c = state.lastResult || calculate();
+  const yrs = isFinite(c.paybackYears) ? c.paybackYears.toFixed(1) + " " + t("yearsUnit") : "—";
 
   const lines = [];
-  lines.push("New solar calculator lead from website:");
+  lines.push(t("mailNewLead"));
   lines.push("");
-  lines.push("Name: " + name);
-  lines.push("Phone: " + phone);
-  if (email) lines.push("Email: " + email);
-  if (city) lines.push("City: " + city);
+  lines.push(t("mailName") + ": " + name);
+  lines.push(t("mailPhone") + ": " + phone);
+  if (email) lines.push(t("mailEmail") + ": " + email);
+  if (city)  lines.push(t("mailCity") + ": " + city);
   lines.push("");
-  lines.push("--- Estimated system ---");
-  lines.push("Daily energy: " + c.totalDaily.toFixed(1) + " kWh");
-  lines.push("Day / Night: " + c.dayEnergy.toFixed(1) + " / " + c.nightEnergy.toFixed(1) + " kWh");
-  lines.push("Solar panels: " + c.panelKW.toFixed(2) + " kW");
-  lines.push("Battery: " + c.batteryKWh.toFixed(1) + " kWh");
-  lines.push("Inverter: " + c.inverterKW.toFixed(2) + " kW");
-  lines.push("Estimated price: " + fmtUSD(c.totalUSD) + " (" + fmtIQD(c.totalIQD) + ")");
-  lines.push("Monthly bill avoided: " + fmtUSD(c.monthlyBillIQD / CONFIG.exchangeRate_IQD_per_USD) + " (" + fmtIQD(c.monthlyBillIQD) + ")");
-  lines.push("Payback period: " + (isFinite(c.paybackYears) ? c.paybackYears.toFixed(1) + " years" : "—"));
+  lines.push(t("mailEstimatedSystem"));
+  lines.push(t("mailDailyEnergy") + ": " + c.totalDaily.toFixed(1) + " kWh");
+  lines.push(t("mailDayNight") + ": " + c.dayEnergy.toFixed(1) + " / " + c.nightEnergy.toFixed(1) + " kWh");
+  lines.push(t("mailSolarPanels") + ": " + c.panelKW.toFixed(2) + " kW");
+  lines.push(t("mailBattery") + ": " + c.batteryKWh.toFixed(1) + " kWh");
+  lines.push(t("mailInverter") + ": " + c.inverterKW.toFixed(2) + " kW");
+  lines.push(t("mailEstimatedPrice") + ": " + fmtUSD(c.totalUSD) + " (" + fmtIQD(c.totalIQD) + ")");
+  lines.push(t("mailMonthlyAvoided") + ": " + fmtUSD(c.monthlyBillIQD / CONFIG.exchangeRate_IQD_per_USD) + " (" + fmtIQD(c.monthlyBillIQD) + ")");
+  lines.push(t("mailPayback") + ": " + yrs);
   lines.push("");
-  lines.push("--- Appliances ---");
+  lines.push(t("mailAppliances"));
   Object.entries(state.selected).forEach(([id, sel]) => {
     const app = APPLIANCES.find(a => a.id === id);
-    lines.push("- " + app.name + " ×" + sel.qty + " @ " + applianceWatts(id, sel) + "W × " + applianceHours(id, sel) + "h");
+    lines.push("- " + applianceName(app) + " ×" + sel.qty + " @ " + applianceWatts(id, sel) + "W × " + applianceHours(id, sel) + "h");
   });
 
-  const subject = encodeURIComponent("Solar quote request — " + name);
+  const subject = encodeURIComponent(t("mailSubject") + name);
   const body = encodeURIComponent(lines.join("\n"));
   window.location.href = `mailto:${CONFIG.companyEmail}?subject=${subject}&body=${body}`;
 }
@@ -1457,7 +1787,7 @@ function goToStep(n) {
 
 function goNext() {
   if (state.currentStep === 2 && Object.keys(state.selected).length === 0) {
-    alert("Please add at least one appliance before continuing.");
+    alert(t("addAtLeastOneAlert"));
     return;
   }
   if (state.currentStep < 5) goToStep(state.currentStep + 1);
@@ -1479,13 +1809,14 @@ function updateNav() {
   back.style.visibility = state.currentStep === 1 ? "hidden" : "visible";
 
   if (state.currentStep === 4) {
-    next.textContent = "Get a quote";
+    next.textContent = t("navGetQuote");
   } else if (state.currentStep === 5) {
     next.style.display = "none";
   } else {
-    next.textContent = "Next";
+    next.textContent = t("navNext");
     next.style.display = "";
   }
+  back.textContent = t("navBack");
 
   if (state.currentStep === 5) next.style.display = "none";
   else next.style.display = "";
@@ -1495,10 +1826,8 @@ function updateNav() {
 
 function updateRunningTotal() {
   const el = document.getElementById("runningTotal");
-  if (state.currentStep === 2) {
-    el.innerHTML = `Total: <b>${totalDaily().toFixed(1)} kWh/day</b>`;
-  } else if (state.currentStep === 3 || state.currentStep === 4) {
-    el.innerHTML = `Total: <b>${totalDaily().toFixed(1)} kWh/day</b>`;
+  if (state.currentStep >= 2 && state.currentStep <= 4) {
+    el.innerHTML = `${t("runningTotalLbl")}: <b>${totalDaily().toFixed(1)} ${t("perDayKWhSuffix")}</b>`;
   } else {
     el.innerHTML = "";
   }
@@ -1508,7 +1837,14 @@ function updateRunningTotal() {
    INIT
    ============================================================ */
 document.getElementById("brandLogo").src = LOGO_DATA_URI;
-goToStep(1);
+
+// Restore the user's last-chosen language; default is Kurdish Sorani.
+let savedLang = "ckb";
+try {
+  const stored = localStorage.getItem("blueRayLang");
+  if (stored && T[stored]) savedLang = stored;
+} catch (e) { /* localStorage unavailable (private mode, etc.) — use default */ }
+setLanguage(savedLang);  // calls applyTranslations + goToStep(currentStep)
 </script>
 </body>
 </html>
