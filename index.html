@@ -385,13 +385,13 @@
     color: rgba(255,255,255,0.7);
     margin-bottom: 8px;
   }
-  .quote-price-iqd {
+  .quote-price-primary {
     font-size: 40px;
     font-weight: 800;
     letter-spacing: -1px;
     line-height: 1;
   }
-  .quote-price-usd {
+  .quote-price-secondary {
     color: var(--accent);
     font-weight: 600;
     margin-top: 6px;
@@ -658,7 +658,7 @@
     .savings-grid { grid-template-columns: 1fr; }
     .summary-row { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
-    .quote-price-iqd { font-size: 30px; }
+    .quote-price-primary { font-size: 30px; }
     .phone-cta { font-size: 20px; padding: 14px 22px; }
     .selected-panel { position: static; }
     .review-table { font-size: 12px; }
@@ -759,8 +759,8 @@
 
     <div class="quote-card">
       <div class="quote-label">Estimated installed price</div>
-      <div class="quote-price-iqd" id="priceIQD">—</div>
-      <div class="quote-price-usd" id="priceUSD">—</div>
+      <div class="quote-price-primary" id="priceUSD">—</div>
+      <div class="quote-price-secondary" id="priceIQD">—</div>
       <div class="quote-sys">
         <div class="quote-sys-item">
           <div class="quote-sys-val" id="sysPanel">—</div>
@@ -796,14 +796,14 @@
 
     <div class="savings-grid">
       <div class="savings-card">
-        <div class="savings-lbl">Grid electricity savings</div>
-        <div class="savings-val" id="savGrid">—</div>
-        <div class="savings-note">Estimated yearly savings on national grid bills.</div>
+        <div class="savings-lbl">Monthly electricity bill avoided</div>
+        <div class="savings-val" id="savMonthly">—</div>
+        <div class="savings-note" id="savMonthlyNote">What you'd otherwise pay the government grid each month.</div>
       </div>
       <div class="savings-card">
-        <div class="savings-lbl">Generator fuel savings</div>
-        <div class="savings-val" id="savGen">—</div>
-        <div class="savings-note">Estimated yearly fuel saved when the grid is out.</div>
+        <div class="savings-lbl">Yearly electricity bill avoided</div>
+        <div class="savings-val" id="savYearly">—</div>
+        <div class="savings-note" id="savYearlyNote">Estimated yearly savings based on Iraq's tiered residential tariff.</div>
       </div>
       <div class="savings-card payback">
         <div class="savings-lbl">Payback period</div>
@@ -818,7 +818,7 @@
     </div>
 
     <div class="disclaimer">
-      This is an automated estimate based on the inputs you provided and typical Iraq conditions (5.5 peak sun-hours, average appliance behavior). The final system specification and price will be confirmed by a Blue Ray Energy engineer after a site visit.
+      This is an automated estimate based on the inputs you provided and typical Iraq conditions (8 peak sun-hours averaged across the year, average appliance behavior). The final system specification and price will be confirmed by a Blue Ray Energy engineer after a site visit.
     </div>
   </section>
 
@@ -880,18 +880,25 @@
    Change the numbers below and the entire calculator updates.
    ============================================================ */
 const CONFIG = {
-  exchangeRate_IQD_per_USD: 1310,
-  peakSunHours: 5.5,
+  exchangeRate_IQD_per_USD: 1500,
+  peakSunHours: 8,
   systemEfficiency: 0.75,
   batteryDoD: 0.8,
   autonomyDays: 1,
-  panel_USD_per_W: 0.70,
-  battery_USD_per_kWh: 600,
-  inverter_USD_per_kW: 250,
-  installationOverheadPct: 0.15,
-  gridTariff_IQD_per_kWh: 120,
-  generatorCost_IQD_per_kWh: 600,
-  outageHoursPerDay: 8,
+  panel_USD_per_W: 0.20,
+  battery_USD_per_kWh: 180,
+  inverter_USD_per_kW: 200,
+  installationOverheadPct: 0.10,
+  // Iraq government residential electricity tariff — progressive monthly tiers.
+  // Each tier's `rate` applies only to the kWh inside that band (e.g. 670 kWh/mo
+  // = first 400 × 72 + next 270 × 108), matching how the bill is actually computed.
+  electricityTariffTiers_IQD: [
+    { upTo: 400,      rate: 72  },
+    { upTo: 800,      rate: 108 },
+    { upTo: 1200,     rate: 175 },
+    { upTo: 1600,     rate: 265 },
+    { upTo: Infinity, rate: 350 }
+  ],
   co2_kg_per_kWh_grid: 0.7,
   companyPhone: "+964 (751) 242 3333",
   companyEmail: "info@be-iraq.com",
@@ -1084,11 +1091,10 @@ function calculate() {
   const totalUSD = equipmentUSD * (1 + CONFIG.installationOverheadPct);
   const totalIQD = totalUSD * CONFIG.exchangeRate_IQD_per_USD;
 
-  const gridSavingsIQD = totalDaily * 365 * CONFIG.gridTariff_IQD_per_kWh;
-  const outageShare = CONFIG.outageHoursPerDay / 24;
-  const generatorSavingsIQD = totalDaily * 365 * outageShare * CONFIG.generatorCost_IQD_per_kWh;
-  const totalAnnualSavings = gridSavingsIQD + generatorSavingsIQD;
-  const paybackYears = totalAnnualSavings > 0 ? totalIQD / totalAnnualSavings : Infinity;
+  const monthlyKWh = totalDaily * (365 / 12);
+  const monthlyBillIQD = tieredMonthlyBillIQD(monthlyKWh);
+  const annualBillIQD = monthlyBillIQD * 12;
+  const paybackYears = annualBillIQD > 0 ? totalIQD / annualBillIQD : Infinity;
   const co2Saved = totalDaily * 365 * CONFIG.co2_kg_per_kWh_grid;
 
   return {
@@ -1096,8 +1102,21 @@ function calculate() {
     panelKW, batteryKWh, inverterKW,
     panelCostUSD, batteryCostUSD, inverterCostUSD,
     totalUSD, totalIQD,
-    gridSavingsIQD, generatorSavingsIQD, paybackYears, co2Saved
+    monthlyKWh, monthlyBillIQD, annualBillIQD, paybackYears, co2Saved
   };
+}
+
+// Walks the progressive tier table for a given monthly kWh usage.
+function tieredMonthlyBillIQD(monthlyKWh) {
+  let bill = 0;
+  let prevUpTo = 0;
+  for (const tier of CONFIG.electricityTariffTiers_IQD) {
+    if (monthlyKWh <= prevUpTo) break;
+    const bandKWh = Math.min(monthlyKWh, tier.upTo) - prevUpTo;
+    bill += bandKWh * tier.rate;
+    prevUpTo = tier.upTo;
+  }
+  return bill;
 }
 
 /* ============================================================
@@ -1340,8 +1359,8 @@ function renderResults() {
   const c = calculate();
   state.lastResult = c;
 
-  document.getElementById("priceIQD").textContent = fmtIQD(c.totalIQD);
-  document.getElementById("priceUSD").textContent = "≈ " + fmtUSD(c.totalUSD);
+  document.getElementById("priceUSD").textContent = fmtUSD(c.totalUSD);
+  document.getElementById("priceIQD").textContent = "≈ " + fmtIQD(c.totalIQD);
   document.getElementById("sysPanel").textContent = fmtKW(c.panelKW);
   document.getElementById("sysBattery").textContent = c.batteryKWh.toFixed(1) + " kWh";
   document.getElementById("sysInverter").textContent = fmtKW(c.inverterKW);
@@ -1349,8 +1368,14 @@ function renderResults() {
   document.getElementById("resDay").textContent = fmtKWh(c.dayEnergy);
   document.getElementById("resNight").textContent = fmtKWh(c.nightEnergy);
 
-  document.getElementById("savGrid").textContent = fmtIQD(c.gridSavingsIQD) + "/yr";
-  document.getElementById("savGen").textContent = fmtIQD(c.generatorSavingsIQD) + "/yr";
+  const monthlyBillUSD = c.monthlyBillIQD / CONFIG.exchangeRate_IQD_per_USD;
+  const annualBillUSD = c.annualBillIQD / CONFIG.exchangeRate_IQD_per_USD;
+  document.getElementById("savMonthly").textContent = fmtUSD(monthlyBillUSD) + "/mo";
+  document.getElementById("savMonthlyNote").textContent =
+    "≈ " + fmtIQD(c.monthlyBillIQD) + "/mo at " + Math.round(c.monthlyKWh) + " kWh/mo.";
+  document.getElementById("savYearly").textContent = fmtUSD(annualBillUSD) + "/yr";
+  document.getElementById("savYearlyNote").textContent =
+    "≈ " + fmtIQD(c.annualBillIQD) + "/yr on Iraq's tiered residential tariff.";
   document.getElementById("savPayback").textContent = isFinite(c.paybackYears)
     ? c.paybackYears.toFixed(1) + " years" : "—";
   document.getElementById("savCO2").textContent = Math.round(c.co2Saved).toLocaleString() + " kg/yr";
@@ -1392,7 +1417,9 @@ function submitContact(e) {
   lines.push("Solar panels: " + c.panelKW.toFixed(2) + " kW");
   lines.push("Battery: " + c.batteryKWh.toFixed(1) + " kWh");
   lines.push("Inverter: " + c.inverterKW.toFixed(2) + " kW");
-  lines.push("Estimated price: " + fmtIQD(c.totalIQD) + " (" + fmtUSD(c.totalUSD) + ")");
+  lines.push("Estimated price: " + fmtUSD(c.totalUSD) + " (" + fmtIQD(c.totalIQD) + ")");
+  lines.push("Monthly bill avoided: " + fmtUSD(c.monthlyBillIQD / CONFIG.exchangeRate_IQD_per_USD) + " (" + fmtIQD(c.monthlyBillIQD) + ")");
+  lines.push("Payback period: " + (isFinite(c.paybackYears) ? c.paybackYears.toFixed(1) + " years" : "—"));
   lines.push("");
   lines.push("--- Appliances ---");
   Object.entries(state.selected).forEach(([id, sel]) => {
